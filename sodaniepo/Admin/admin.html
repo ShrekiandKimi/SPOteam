@@ -1,330 +1,230 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Construx Co. - Реестр сотрудников</title>
-
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#135bec",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#101622",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
-            },
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construx Co. - Реестр сотрудников</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="../Authorization/styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Manrope', sans-serif; background: #f1f5f9; }
+        
+        .header {
+            background: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
         }
-    </script>
-<style>
-        body {
-            font-family: 'Manrope', sans-serif;
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header .material-symbols-outlined { font-size: 32px; color: #135bec; }
+        .header h1 { font-size: 20px; color: #1e293b; }
+        
+        .user-menu { display: flex; align-items: center; gap: 16px; }
+        .user-info { text-align: right; }
+        .user-info h3 { font-size: 14px; color: #1e293b; }
+        .user-info p { font-size: 12px; color: #64748b; }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        .logout-btn:hover {
+            background: #fecaca;
+            transform: translateY(-1px);
         }
+        
+        .main-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+        .stats {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stats h2 { font-size: 18px; color: #1e293b; margin-bottom: 8px; }
+        .stats p { color: #64748b; font-size: 14px; }
+        
+        .filters {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .filters select, .filters input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; }
+        td { font-size: 14px; color: #1e293b; }
+        .status-active { color: #10b981; background: #d1fae5; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .status-absent { color: #dc2626; background: #fee2e2; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .action-btn { background: none; border: none; cursor: pointer; color: #64748b; }
+        .action-btn:hover { color: #1e293b; }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-<div class="flex h-screen overflow-hidden">
-<aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-full">
-<div class="p-6">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
-<span class="material-symbols-outlined">architecture</span>
-</div>
-<div>
-<h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none">Construx Co.</h1>
-<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Портал управления</p>
-</div>
-</div>
-</div>
-<nav class="flex-1 px-4 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg bg-primary/10 text-primary" href="#">
-<span class="material-symbols-outlined text-[22px]">badge</span>
-                    Реестр
-                </a>
-<!-- <a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-<span class="material-symbols-outlined text-[22px]">monitoring</span>
-                    Мониторинг
-                </a>
-<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-<span class="material-symbols-outlined text-[22px]">location_on</span>
-                    Сайты проектов
-                </a>
-<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
-<span class="material-symbols-outlined text-[22px]">event_note</span>
-                    Расписания
-                </a>
-</nav> -->
-<div class="p-4 border-t border-slate-200 dark:border-slate-800">
-<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-<img class="w-8 h-8 rounded-full border border-slate-200" data-alt="Profile picture of site manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMoIDh-6I3Pdz7IQxuuuUtE_TvOPXqSSEcz42vuYJMOv1LnDF7wka1jb9KxeFqOYcd_OeVWHdo7cPKMnxl5gXIMw4xnKZF4iKBVLcVbnvGMSVz4obiGDSdsFc87RzrAp8VcTAon9ODPnQchtdCgyHqu7NoLPJJ8uPbvo0AQsIbpefeqPZxN4hK9x8t2Ba-feolMjgI7iLPHosWbDv-TUblfUmiRGtyJIjmHambn-h8AbLydiqFrrN0AAnUPEqX5pJUKtzKHKo06tw"/>
-<div class="flex-1 min-w-0">
-<p class="text-xs font-bold truncate">Виктор Иванов</p>
-<p class="text-[10px] text-slate-500 truncate">Администратор</p>
-</div>
-<span class="material-symbols-outlined text-slate-400 text-sm"></span>
-</div>
-</div>
-</aside>
-
-<main class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark overflow-y-auto">
-
-<header class="flex flex-col gap-6 p-8 max-w-7xl mx-auto w-full">
-<div class="flex flex-wrap items-center justify-between gap-4">
-<div>
-<h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Реестр сотрудников</h2>
-<p class="text-slate-500 dark:text-slate-400 mt-1">124 активных сотрудника на 8 действующих объектах</p>
-</div>
-<button class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all">
-<span class="material-symbols-outlined text-lg">person_add</span>
-                        Добавить сотрудника
-                    </button>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-
-<div class="md:col-span-6">
-<div class="relative group">
-<span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-<span class="material-symbols-outlined">search</span>
-</span>
-<input class="block w-full pl-10 pr-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm placeholder:text-slate-400" placeholder="Search by name, ID, or site..." type="text"/>
-</div>
-</div>
-<div class="md:col-span-3">
-<div class="relative">
-<select class="block w-full pl-3 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg appearance-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-slate-600 dark:text-slate-300">
-<option>Все позиции</option>
-<option>Менеджер проекта</option>
-<option>Руководитель участка</option>
-<option>Сотрудник по технике безопасности</option>
-<option>Мастер</option>
-</select>
-<span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-<span class="material-symbols-outlined">expand_more</span>
-</span>
-</div>
-</div>
-<div class="md:col-span-3">
-<div class="relative">
-<select class="block w-full pl-3 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg appearance-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-slate-600 dark:text-slate-300">
-<option>Все сайты</option>
-<option>Площадь в центре города</option>
-<option>Западный мост</option>
-<option>Южный терминал</option>
-<option>Восточный индустриальный парк</option>
-</select>
-<span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-<span class="material-symbols-outlined">expand_more</span>
-</span>
-</div>
-</div>
-</div>
-<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-slate-50 dark:bg-slate-800/50 border-bottom border-slate-200 dark:border-slate-800">
-<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Имя</th>
-<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Позиция</th>
-<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Текущий сайт</th>
-<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Контактная информация</th>
-<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Статус</th>
-<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">Действия</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-
-<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-<td class="px-6 py-4">
-<div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs">МС</div>
-<div>
-<p class="text-sm font-bold text-slate-900 dark:text-white">Максим Светиков</p>
-<p class="text-xs text-slate-500">ID: CN-29402</p>
-</div>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="text-sm text-slate-600 dark:text-slate-300">Руководитель участка</span>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300">
-<span class="material-symbols-outlined text-[18px] text-slate-400">location_on</span>
-                                            Западный участок
-                                        </div>
-</td>
-<td class="px-6 py-4">
-<div class="flex flex-col text-xs text-slate-500">
-<span>+7 (800) 555 35 35</span>
-<span class="mt-0.5">zxcqwerty@construx.com</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                            Активный
-                                        </span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">more_horiz</span>
-</button>
-</td>
-</tr>
-
-<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-<td class="px-6 py-4">
-<div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs">АА</div>
-<div>
-<p class="text-sm font-bold text-slate-900 dark:text-white">Арсений Алхимов</p>
-<p class="text-xs text-slate-500">ID: CN-31294</p>
-</div>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="text-sm text-slate-600 dark:text-slate-300">Работяга лютый </span>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300">
-<span class="material-symbols-outlined text-[18px] text-slate-400">location_on</span>
-                                            Расстановка Камазов
-                                        </div>
-</td>
-<td class="px-6 py-4">
-<div class="flex flex-col text-xs text-slate-500">
-<span>+7 (721) 283 23 12</span>
-<span class="mt-0.5">arasars@construx.com</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                                            Отсутствие
-                                        </span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">more_horiz</span>
-</button>
-</td>
-</tr>
-<!-- Row 3 -->
-<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-<td class="px-6 py-4">
-<div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs">АД</div>
-<div>
-<p class="text-sm font-bold text-slate-900 dark:text-white">Азамат Дудаев</p>
-<p class="text-xs text-slate-500">ID: CN-11822</p>
-</div>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="text-sm text-slate-600 dark:text-slate-300">Повар в столовке</span>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300">
-<span class="material-symbols-outlined text-[18px] text-slate-400">location_on</span>
-                                            Восточная кухня
-                                        </div>
-</td>
-<td class="px-6 py-4">
-<div class="flex flex-col text-xs text-slate-500">
-<span>+7 (880) 505 21 22</span>
-<span class="mt-0.5">pudge@construx.com</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                            Активный
-                                        </span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">more_horiz</span>
-</button>
-</td>
-</tr>
-
-<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-<td class="px-6 py-4">
-<div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs">АС</div>
-<div>
-<p class="text-sm font-bold text-slate-900 dark:text-white">Антон Спартак</p>
-<p class="text-xs text-slate-500">ID: CN-44091</p>
-</div>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="text-sm text-slate-600 dark:text-slate-300">Полевик</span>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300">
-<span class="material-symbols-outlined text-[18px] text-slate-400">location_on</span>
-                                            Полевик
-                                        </div>
-</td>
-<td class="px-6 py-4">
-<div class="flex flex-col text-xs text-slate-500">
-<span>+7 (123) 322 31 22</span>
-<span class="mt-0.5">m.garcia@construx.com</span>
-</div>
-</td>
-<td class="px-6 py-4">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                            Активный
-                                        </span>
-</td>
-<td class="px-6 py-4 text-right">
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">more_horiz</span>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<!-- <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-<p class="text-xs text-slate-500">Показано 4 из 124 сотрудников</p>
-<div class="flex gap-2">
-<button class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 transition-colors">
-<span class="material-symbols-outlined text-sm">chevron_left</span>
-</button>
-<button class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 transition-colors">
-<span class="material-symbols-outlined text-sm">chevron_right</span>
-</button> -->
-</div>
-</div>
-</div>
-
-<div class="hidden flex-col items-center justify-center p-12 bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800">
-<span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-700">персона_офф</span>
-<h3 class="mt-4 text-base font-bold text-slate-900 dark:text-white">Сотрудники не найдены</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400 text-center max-w-xs mt-1">Попробуйте настроить свои фильтры или условия поиска, чтобы найти того, кого вы ищете.</p>
-</div>
-</header>
-</main>
-</div>
-</body></html>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <span class="material-symbols-outlined">architecture</span>
+            <div>
+                <h1>Construx Co.</h1>
+                <p style="font-size: 12px; color: #64748b;">Портал управления</p>
+            </div>
+        </div>
+        <div class="user-menu">
+            <div class="user-info">
+                <h3 id="adminName">Виктор Иванов</h3>
+                <p>Администратор</p>
+            </div>
+            <!-- 🔹 КНОПКА ВЫХОДА -->
+            <button class="logout-btn" onclick="logout()">
+                <span class="material-symbols-outlined">logout</span>
+                Выйти
+            </button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="stats">
+            <h2>Реестр сотрудников</h2>
+            <p>124 активных сотрудника на 8 действующих объектах</p>
+        </div>
+        
+        <div class="filters">
+            <button class="btn-primary" style="width: auto;">
+                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 4px;">person_add</span>
+                Добавить сотрудника
+            </button>
+            <input type="text" placeholder="🔍 Поиск..." style="flex: 1; min-width: 200px;">
+            <select>
+                <option>Все позиции</option>
+                <option>Менеджер проекта</option>
+                <option>Руководитель участка</option>
+                <option>Сотрудник по технике безопасности</option>
+                <option>Мастер</option>
+            </select>
+            <select>
+                <option>Все сайты</option>
+                <option>Площадь в центре города</option>
+                <option>Западный мост</option>
+                <option>Южный терминал</option>
+                <option>Восточный индустриальный парк</option>
+            </select>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Позиция</th>
+                        <th>Текущий сайт</th>
+                        <th>Контактная информация</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>МС</strong> Максим Светиков<br>
+                            <small style="color: #64748b;">ID: CN-29402</small>
+                        </td>
+                        <td>Руководитель участка</td>
+                        <td>📍 Западный участок</td>
+                        <td>📞 +7 (800) 555 35 35<br>✉️ zxcqwerty@construx.com</td>
+                        <td><span class="status-active">Активный</span></td>
+                        <td><button class="action-btn"><span class="material-symbols-outlined">more_horiz</span></button></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>АА</strong> Арсений Алхимов<br>
+                            <small style="color: #64748b;">ID: CN-31294</small>
+                        </td>
+                        <td>Работяга лютый</td>
+                        <td>📍 Расстановка Камазов</td>
+                        <td>📞 +7 (721) 283 23 12<br>✉️ arasars@construx.com</td>
+                        <td><span class="status-absent">Отсутствие</span></td>
+                        <td><button class="action-btn"><span class="material-symbols-outlined">more_horiz</span></button></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>АД</strong> Азамат Дудаев<br>
+                            <small style="color: #64748b;">ID: CN-11822</small>
+                        </td>
+                        <td>Повар в столовке</td>
+                        <td>📍 Восточная кухня</td>
+                        <td>📞 +7 (880) 505 21 22<br>✉️ pudge@construx.com</td>
+                        <td><span class="status-active">Активный</span></td>
+                        <td><button class="action-btn"><span class="material-symbols-outlined">more_horiz</span></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Проверка авторизации
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+            
+            if (!token || role !== 'admin') {
+                window.location.href = '/auto.html';
+                return;
+            }
+            
+            // Загрузка имени админа
+            fetch('/api/validate-token', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid && data.name) {
+                    document.getElementById('adminName').textContent = data.name;
+                }
+            })
+            .catch(() => {
+                localStorage.clear();
+                window.location.href = '/auto.html';
+            });
+        });
+        
+        // 🔹 ФУНКЦИЯ ВЫХОДА
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/auto.html';
+        }
+    </script>
+</body>
+</html>

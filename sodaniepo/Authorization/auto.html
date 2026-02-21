@@ -132,7 +132,8 @@
                     <input type="checkbox" id="remember">
                     <span>Запомнить устройство</span>
                 </label>
-                <a class="forgot-password" onclick="openModal('modal-forgot')">Забыли пароль?</a>
+                <!-- 🔹 Добавил id="btn-forgot" -->
+                <a class="forgot-password" id="btn-forgot">Забыли пароль?</a>
             </div>
             
             <button type="submit" class="login-btn">
@@ -144,8 +145,10 @@
         <div class="login-footer">
             <p>© 2026 Все права защищены</p>
             <div class="support-links">
-                <a href="#" onclick="openModal('modal-support')">📞 Техническая поддержка</a>
-                <a href="#" onclick="openModal('modal-admin')">👨‍💼 Администратор</a>
+                <!-- 🔹 Добавил id="btn-support" -->
+                <a href="#" id="btn-support">📞 Техническая поддержка</a>
+                <!-- 🔹 Добавил id="btn-admin" -->
+                <a href="#" id="btn-admin">👨‍💼 Администратор</a>
             </div>
         </div>
     </div>
@@ -163,7 +166,12 @@
                     <li>📧 support@tracking-system.com</li>
                     <li>📱 +7 (999) 123-45-67</li>
                 </ul>
-                
+                <form class="support-form">
+                    <input type="text" placeholder="Ваше имя" required>
+                    <input type="email" placeholder="Ваш email" required>
+                    <textarea placeholder="Ваше сообщение" required></textarea>
+                    <button type="submit" class="btn-primary">Отправить сообщение</button>
+                </form>
             </div>
         </div>
     </div>
@@ -208,5 +216,19 @@
     </div>
     
     <script src="script.js"></script>
+    <script>
+        // Показать/скрыть пароль
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = 'visibility';
+            }
+        }
+    </script>
 </body>
 </html>
