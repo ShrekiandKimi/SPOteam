@@ -8,12 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Manrope', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -23,7 +18,6 @@
             justify-content: center;
             padding: 20px;
         }
-        
         .login-container {
             background: white;
             border-radius: 16px;
@@ -32,160 +26,77 @@
             max-width: 450px;
             padding: 40px;
         }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        
+        .login-header { text-align: center; margin-bottom: 32px; }
         .login-header .material-symbols-outlined {
-            font-size: 48px;
-            color: #667eea;
-            margin-bottom: 16px;
+            font-size: 48px; color: #667eea; margin-bottom: 16px;
         }
-        
-        .login-header h1 {
-            font-size: 24px;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .login-header p {
-            color: #64748b;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
+        .login-header h1 { font-size: 24px; color: #1e293b; margin-bottom: 8px; }
+        .login-header p { color: #64748b; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
         .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #475569;
-            font-size: 14px;
-            font-weight: 500;
+            display: block; margin-bottom: 8px; color: #475569;
+            font-size: 14px; font-weight: 500;
         }
-        
-        .input-wrapper {
-            position: relative;
-        }
-        
+        .input-wrapper { position: relative; }
         .input-wrapper .material-symbols-outlined {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 20px;
+            position: absolute; left: 12px; top: 50%;
+            transform: translateY(-50%); color: #94a3b8; font-size: 20px;
         }
-        
         .form-group input {
-            width: 100%;
-            padding: 12px 12px 12px 44px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Manrope', sans-serif;
+            width: 100%; padding: 12px 12px 12px 44px;
+            border: 1px solid #e2e8f0; border-radius: 8px;
+            font-size: 14px; font-family: 'Manrope', sans-serif;
             transition: all 0.2s;
         }
-        
         .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
+            outline: none; border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        
         .password-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #94a3b8;
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%); background: none;
+            border: none; cursor: pointer; color: #94a3b8;
         }
-        
         .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            font-size: 14px;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 24px; font-size: 14px;
         }
-        
         .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #475569;
-            cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            color: #475569; cursor: pointer;
         }
-        
         .remember-me input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
+            width: 16px; height: 16px; cursor: pointer;
         }
-        
         .forgot-password {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
+            color: #667eea; text-decoration: none;
+            font-weight: 500; cursor: pointer;
         }
-        
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
-        
+        .forgot-password:hover { text-decoration: underline; }
         .login-btn {
-            width: 100%;
-            padding: 14px;
+            width: 100%; padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Manrope', sans-serif;
+            color: white; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; font-family: 'Manrope', sans-serif;
         }
-        
         .login-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
-        
-        .login-btn:active {
-            transform: translateY(0);
-        }
-        
+        .login-btn:active { transform: translateY(0); }
         .login-footer {
-            margin-top: 24px;
-            text-align: center;
-            color: #64748b;
-            font-size: 14px;
+            margin-top: 24px; text-align: center;
+            color: #64748b; font-size: 14px;
         }
-        
         .support-links {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 12px;
+            display: flex; justify-content: center;
+            gap: 16px; margin-top: 12px;
         }
-        
         .support-links a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 13px;
+            color: #667eea; text-decoration: none; font-size: 13px;
         }
-        
-        .support-links a:hover {
-            text-decoration: underline;
-        }
+        .support-links a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -196,7 +107,7 @@
             <p>Введите свои учетные данные для доступа к панели мониторинга</p>
         </div>
         
-        <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
+        <form id="loginForm" class="space-y-4">
             <div class="form-group">
                 <label for="email">Почта</label>
                 <div class="input-wrapper">
