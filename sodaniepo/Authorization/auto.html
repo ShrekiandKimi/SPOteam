@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Tracking System - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .login-header .material-symbols-outlined {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 16px;
+        }
+        
+        .login-header h1 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .login-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper .material-symbols-outlined {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 20px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Manrope', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #475569;
+            cursor: pointer;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .support-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        
+        .support-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        
+        .support-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <span class="material-symbols-outlined">architecture</span>
+            <h1>Система отслеживания персонала</h1>
+            <p>Введите свои учетные данные для доступа к панели мониторинга</p>
+        </div>
+        
+        <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">Почта</label>
+                <div class="input-wrapper">
+                    <span class="material-symbols-outlined">mail</span>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <div class="input-wrapper">
+                    <span class="material-symbols-outlined">lock</span>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <span class="material-symbols-outlined" id="toggleIcon">visibility</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <span>Запомнить устройство</span>
+                </label>
+                <a class="forgot-password" onclick="openModal('modal-forgot')">Забыли пароль?</a>
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">login</span>
+                Войти в систему
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            <p>© 2026 Все права защищены</p>
+            <div class="support-links">
+                <a href="#" onclick="openModal('modal-support')">📞 Техническая поддержка</a>
+                <a href="#" onclick="openModal('modal-admin')">👨‍💼 Администратор</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно поддержки -->
+    <div id="modal-support" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📞 Техническая поддержка</h2>
+                <button class="modal-close" data-modal="modal-support">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Свяжитесь с нами:</p>
+                <ul class="support-contacts">
+                    <li>📧 support@tracking-system.com</li>
+                    <li>📱 +7 (999) 123-45-67</li>
+                </ul>
+                <form class="support-form">
+                    <input type="text" placeholder="Ваше имя" required>
+                    <input type="email" placeholder="Ваш email" required>
+                    <textarea placeholder="Ваше сообщение" required></textarea>
+                    <button type="submit" class="btn-primary">Отправить сообщение</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно администратора -->
+    <div id="modal-admin" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👤 Администратор</h2>
+                <button class="modal-close" data-modal="modal-admin">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="admin-card">
+                    <div class="admin-avatar">👨‍💼</div>
+                    <h3>Иван Петров</h3>
+                    <p class="admin-role">Системный администратор</p>
+                    <div class="admin-contacts">
+                        <p>📧 admin@tracking-system.com</p>
+                        <p>📱 Внутренний: 101</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно восстановления пароля -->
+    <div id="modal-forgot" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔐 Восстановление пароля</h2>
+                <button class="modal-close" data-modal="modal-forgot">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Введите почту для восстановления:</p>
+                <form class="forgot-form">
+                    <input type="email" placeholder="your@email.com" required>
+                    <button type="submit" class="btn-primary">Отправить инструкцию</button>
+                </form>
+                <p class="modal-hint">Письмо придёт в течение 5 минут</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
