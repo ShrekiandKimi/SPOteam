@@ -137,9 +137,37 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleIcon.textContent = isPwd ? "visibility_off" : "visibility";
     });
   }
+
+  // Проверка авторизации
+  async function checkAuth() {
+    const token = localStorage.getItem("accessToken");
+    const path = window.location.pathname;
+
+    if (!token && !path.includes("auto.html")) {
+      window.location.href = "/auto.html";
+      return;
+    }
+
+    if (token && path.includes("auto.html")) {
+      try {
+        const res = await fetch("/api/validate-token", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+        });
+        const data = await res.json();
+        if (data.valid) {
+          window.location.href =
+            data.role === "admin" ? "/admin.html" : "/worker.html";
+        } else {
+          localStorage.clear();
+        }
+      } catch (e) {}
+    }
+  }
+  checkAuth();
 });
 
-// Выход из системы
+// Выход
 function logout() {
   localStorage.clear();
   window.location.href = "/auto.html";

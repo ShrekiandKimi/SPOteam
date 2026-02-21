@@ -1,30 +1,38 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 type Claims struct {
 	jwt.RegisteredClaims
-	UserID   string `json:"userId"`
+	UserID   int    `json:"userId"`
 	Email    string `json:"email"`
 	Role     string `json:"role"`
 	UserName string `json:"name"`
 }
 
 type User struct {
-	ID, Email, Password, Role, Name string
+	ID       int
+	Email    string
+	Password string  // 🔹 Это поле нужно добавить!
+	Role     string
+	Name     string
 }
 
 type LoginRequest struct {
-	Email, Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type LoginResponse struct {
@@ -34,14 +42,71 @@ type LoginResponse struct {
 	Role        string `json:"role,omitempty"`
 }
 
-var jwtSecret = []byte("your-secret-key-2026!")
+var (
+	jwtSecret = []byte("secret-key-2026!")
+	db        *sql.DB
+)
 
-var users = []User{
-	{ID: "admin1", Email: "admin@tracking-system.com", Password: "admin123", Role: "admin", Name: "Иван Петров"},
-	{ID: "worker1", Email: "worker@tracking-system.com", Password: "worker123", Role: "worker", Name: "Алекс Петров"},
+func initDB() error {
+	// 🔹 ЗАМЕНИ password= НА СВОЙ ПАРОЛЬ ОТ POSTGRES!
+	connStr := "host=localhost port=5432 user=postgres password=1488 dbname=staff_tracking sslmode=disable"
+	
+	fmt.Println("🔌 Подключение к PostgreSQL...")
+	var err error
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		return fmt.Errorf("ошибка sql.Open: %v", err)
+	}
+
+	if err = db.Ping(); err != nil {
+		return fmt.Errorf("ошибка db.Ping: %v", err)
+	}
+
+	fmt.Println("✅ PostgreSQL подключен!")
+	return nil
+}
+
+func getUserByEmail(email string) (*User, error) {
+	user := &User{}
+	// 🔹 ИСПРАВЛЕНО: password_hash вместо password
+	err := db.QueryRow(
+		"SELECT id, email, password_hash, role, name FROM users WHERE email = $1",
+		email,
+	).Scan(&user.ID, &user.Email, &user.Password, &user.Role, &user.Name)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func generateToken(user User) (string, error) {
+	claims := Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+		UserID:   user.ID,
+		Email:    user.Email,
+		Role:     user.Role,
+		UserName: user.Name,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtSecret)
 }
 
 func main() {
+	// Подключение к БД
+	if err := initDB(); err != nil {
+		log.Fatalf("❌ Ошибка подключения к БД: %v", err)
+	}
+	defer db.Close()
+
 	r := mux.NewRouter()
 
 	// Статические файлы
@@ -79,55 +144,87 @@ func main() {
 		})
 	})
 
-	// Главная → auto.html
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/auto.html", http.StatusTemporaryRedirect)
 	})
 
-	fmt.Println("🚀 Сервер: http://localhost:8080")
+	fmt.Println("🚀 Сервер запущен: http://localhost:8080")
 	fmt.Println("🔑 Admin: admin@tracking-system.com / admin123")
 	fmt.Println("🔑 Worker: worker@tracking-system.com / worker123")
 
-	http.ListenAndServe(":8080", r)
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatalf("❌ Ошибка сервера: %v", err)
+	}
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var req LoginRequest
-	json.NewDecoder(r.Body).Decode(&req)
 
-	for _, user := range users {
-		if user.Email == req.Email && user.Password == req.Password {
-			claims := Claims{
-				RegisteredClaims: jwt.RegisteredClaims{
-					ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-					IssuedAt:  jwt.NewNumericDate(time.Now()),
-				},
-				UserID: user.ID, Email: user.Email, Role: user.Role, UserName: user.Name,
-			}
-			token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-			tokenString, _ := token.SignedString(jwtSecret)
-			json.NewEncoder(w).Encode(LoginResponse{
-				Success: true, AccessToken: tokenString, Role: user.Role,
-			})
-			return
-		}
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		fmt.Printf("❌ Ошибка декодирования: %v\n", err)
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Неверный формат запроса"})
+		return
 	}
-	json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Неверный email или пароль"})
+
+	fmt.Printf("📝 Попытка входа: %s\n", req.Email)
+
+	user, err := getUserByEmail(req.Email)
+	if err != nil {
+		fmt.Printf("❌ Ошибка БД: %v\n", err)
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Ошибка сервера: " + err.Error()})
+		return
+	}
+
+	if user == nil {
+		fmt.Println("❌ Пользователь не найден")
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Пользователь не найден"})
+		return
+	}
+
+	if user.Password != req.Password {
+		fmt.Println("❌ Неверный пароль")
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Неверный email или пароль"})
+		return
+	}
+
+	token, err := generateToken(*user)
+	if err != nil {
+		fmt.Printf("❌ Ошибка токена: %v\n", err)
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Ошибка создания токена"})
+		return
+	}
+
+	fmt.Printf("✅ Вход успешен: %s (%s)\n", user.Email, user.Role)
+	json.NewEncoder(w).Encode(LoginResponse{
+		Success:     true,
+		AccessToken: token,
+		Role:        user.Role,
+	})
 }
 
 func validateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if tokenString == "" {
+		json.NewEncoder(w).Encode(map[string]bool{"valid": false})
+		return
+	}
+
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil
 	})
+
 	if err != nil || !token.Valid {
 		json.NewEncoder(w).Encode(map[string]bool{"valid": false})
 		return
 	}
+
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"valid": true, "role": claims.Role, "name": claims.UserName,
+		"valid": true,
+		"role":  claims.Role,
+		"name":  claims.UserName,
 	})
 }
