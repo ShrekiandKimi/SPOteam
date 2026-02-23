@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет клиента</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="Authorization/styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Manrope', sans-serif; background: #f5f5f5; }
+        
+        .header {
+            background: white; padding: 16px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo .material-symbols-outlined { font-size: 36px; color: #135bec; }
+        .logo h1 { font-size: 24px; color: #1e293b; }
+        
+        .user-menu { display: flex; align-items: center; gap: 16px; }
+        .user-info { text-align: right; }
+        .user-info h3 { font-size: 14px; color: #1e293b; }
+        .user-info p { font-size: 12px; color: #64748b; }
+        
+        .logout-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; background: #fee2e2; color: #dc2626;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: 500;
+        }
+        .logout-btn:hover { background: #fecaca; }
+        
+        .main-content { padding: 40px; max-width: 1200px; margin: 0 auto; }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 32px; border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        .welcome-card h2 { font-size: 28px; margin-bottom: 8px; }
+        .welcome-card p { opacity: 0.9; }
+        
+        .orders-section {
+            background: white; padding: 24px; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .orders-section h3 { font-size: 20px; color: #1e293b; margin-bottom: 20px; }
+        
+        .order-card {
+            border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 20px; margin-bottom: 16px;
+        }
+        .order-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 12px;
+        }
+        .order-title { font-size: 18px; font-weight: 600; color: #1e293b; }
+        .order-status {
+            padding: 6px 12px; border-radius: 20px;
+            font-size: 13px; font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-accepted { background: #dbeafe; color: #135bec; }
+        .status-completed { background: #d1fae5; color: #10b981; }
+        .status-rejected { background: #fee2e2; color: #dc2626; }
+        
+        .order-info { color: #64748b; font-size: 14px; margin-bottom: 8px; }
+        .order-price { font-size: 20px; font-weight: 700; color: #135bec; }
+        .order-date { color: #94a3b8; font-size: 13px; margin-top: 8px; }
+        
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #94a3b8;
+        }
+        .empty-state .material-symbols-outlined {
+            font-size: 64px; margin-bottom: 16px;
+        }
+        
+        .btn {
+            padding: 10px 20px; border-radius: 8px;
+            font-weight: 600; cursor: pointer; border: none;
+            font-family: 'Manrope', sans-serif;
+        }
+        .btn-primary { background: #135bec; color: white; }
+        .btn-primary:hover { background: #0d4bd6; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <span class="material-symbols-outlined">home</span>
+            <h1>Личный кабинет клиента</h1>
+        </div>
+        <div class="user-menu">
+            <div class="user-info">
+                <h3 id="customerName">Загрузка...</h3>
+                <p>Клиент</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <span class="material-symbols-outlined">logout</span>
+                Выйти
+            </button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="welcome-card">
+            <h2 id="greeting">Добро пожаловать!</h2>
+            <p>Здесь вы можете отслеживать статус ваших заказов</p>
+        </div>
+
+        <div class="orders-section">
+            <h3>📋 Мои заказы</h3>
+            <div id="ordersList">
+                <div class="empty-state">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <p>У вас пока нет заказов</p>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="window.location.href='/auto.html'">
+                        <span class="material-symbols-outlined" style="vertical-align: middle;">shopping_bag</span>
+                        Перейти к услугам
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('accessToken');
+            const role = localStorage.getItem('userRole');
+
+            if (!token || role !== 'customer') {
+                window.location.href = '/auto.html';
+                return;
+            }
+
+            // Загрузка данных клиента
+            fetch('/api/validate-token', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.valid) {
+                    document.getElementById('customerName').textContent = data.name;
+                    document.getElementById('greeting').textContent = 'Добро пожаловать, ' + data.name.split(' ')[0] + '!';
+                    loadOrders();
+                } else {
+                    logout();
+                }
+            })
+            .catch(() => logout());
+        });
+
+        function loadOrders() {
+            const token = localStorage.getItem('accessToken');
+            fetch('/api/get-customer-orders', {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('ordersList');
+                if (data.success && data.orders.length > 0) {
+                    list.innerHTML = data.orders.map(order => `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-title">${order.service_title}</span>
+                                <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
+                            </div>
+                            <div class="order-info">${order.service_description || 'Без описания'}</div>
+                            <div class="order-price">${order.price} ₽</div>
+                            <div class="order-date">📅 ${new Date(order.created_at).toLocaleDateString('ru-RU')}</div>
+                        </div>
+                    `).join('');
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function getStatusText(status) {
+            const map = {
+                'pending': '⏳ В ожидании',
+                'accepted': '✅ Принят',
+                'completed': '✨ Выполнен',
+                'rejected': '❌ Отклонён'
+            };
+            return map[status] || status;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/auto.html';
+        }
+    </script>
+</body>
+</html>

@@ -979,18 +979,109 @@
         }
 
         // Заказать услугу
-        function orderService() {
-            if (currentService) {
-                const token = localStorage.getItem('accessToken');
-                if (!token) {
-                    alert('Для заказа услуги необходимо войти в систему!');
-                    closeServiceModal();
-                    openLoginModal();
-                } else {
-                    alert(`Заказ услуги:\\n${currentService.title}\\nИсполнитель: ${currentService.worker}\\nЦена: ${currentService.price} ₽/час\\n\\nЗдесь будет форма заказа`);
-                }
-            }
+        // Заказать услугу
+function orderService() {
+    if (currentService) {
+        const token = localStorage.getItem('accessToken');
+        const role = localStorage.getItem('userRole');
+        
+        if (!token) {
+            alert('Для заказа услуги необходимо войти в систему!');
+            closeServiceModal();
+            openLoginModal();
+        } else if (role !== 'customer') {
+            alert('Только клиенты могут заказывать услуги!');
+        } else {
+            // Открываем форму заказа
+            openOrderForm(currentService);
         }
+    }
+}
+
+// Форма заказа
+function openOrderForm(service) {
+    const formHtml = `
+        <div id="orderFormModal" class="modal active">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📋 Оформление заказа</h2>
+                    <button class="modal-close" onclick="closeOrderForm()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>${service.title}</strong><br>
+                        <span style="color: #135bec; font-size: 20px; font-weight: 700;">${service.price} ₽/час</span>
+                    </div>
+                    <form id="orderForm" onsubmit="submitOrder(event)">
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; color: #475569;">Ваше имя</label>
+                            <input type="text" id="orderName" required style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; color: #475569;">Телефон</label>
+                            <input type="tel" id="orderPhone" required style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; color: #475569;">Адрес объекта</label>
+                            <input type="text" id="orderAddress" required style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 8px; color: #475569;">Комментарий</label>
+                            <textarea id="orderDesc" rows="3" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">send</span>
+                            Отправить заявку
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', formHtml);
+}
+
+function closeOrderForm() {
+    const modal = document.getElementById('orderFormModal');
+    if (modal) modal.remove();
+}
+
+async function submitOrder(event) {
+    event.preventDefault();
+    
+    const token = localStorage.getItem('accessToken');
+    const orderData = {
+        service_title: currentService.title,
+        service_description: document.getElementById('orderDesc').value,
+        price: currentService.price,
+        customer_name: document.getElementById('orderName').value,
+        customer_phone: document.getElementById('orderPhone').value,
+        customer_address: document.getElementById('orderAddress').value
+    };
+
+    try {
+        const response = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ Заявка отправлена!\nАдминистратор свяжется с вами в ближайшее время.');
+            closeOrderForm();
+            closeServiceModal();
+            window.location.href = '/customer.html';
+        } else {
+            alert('❌ ' + data.message);
+        }
+    } catch (error) {
+        alert('❌ Ошибка отправки заявки');
+    }
+}
 
         // Модальные окна входа
         function openLoginModal() {
