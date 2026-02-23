@@ -100,6 +100,15 @@
             box-shadow: 0 4px 12px rgba(19, 91, 236, 0.3);
         }
 
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -273,6 +282,215 @@
             font-weight: 600;
         }
 
+        /* Modal Styles */
+        .service-modal .modal-content {
+            max-width: 900px;
+            width: 95%;
+        }
+
+        .service-modal-header {
+            position: relative;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+        }
+
+        .service-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .service-modal-body {
+            padding: 32px;
+        }
+
+        .service-modal-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .service-modal-price {
+            font-size: 28px;
+            color: #135bec;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .service-section {
+            margin-bottom: 32px;
+        }
+
+        .service-section h4 {
+            font-size: 20px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .service-section h4 .material-symbols-outlined {
+            color: #135bec;
+        }
+
+        .service-description-text {
+            color: #475569;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .characteristics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .characteristic-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .characteristic-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .characteristic-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+        }
+
+        .worker-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .worker-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #135bec;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .worker-details h5 {
+            font-size: 20px;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .worker-details p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .worker-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reviews-section {
+            margin-top: 24px;
+        }
+
+        .review-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .review-date {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .review-text {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+        }
+
         /* Footer */
         .footer {
             background: #1e293b;
@@ -339,11 +557,117 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer" id="contacts">
-        <p>© 2026 Staff Tracking. Все права защищены.</p>
-        <p style="margin-top: 8px;">📧 support@stafftracking.ru | 📱 +7 (999) 123-45-67</p>
-    </footer>
+    <!-- Service Detail Modal -->
+    <div id="serviceModal" class="modal service-modal">
+        <div class="modal-content">
+            <div class="service-modal-header" id="modalHeader">
+                <button class="service-modal-close" onclick="closeServiceModal()">×</button>
+                <span id="modalIcon">🏗️</span>
+            </div>
+            <div class="service-modal-body">
+                <h2 class="service-modal-title" id="modalTitle">Строительство стен и перегородок</h2>
+                <div class="service-modal-price" id="modalPrice">2500 ₽/час</div>
+
+                <!-- Description -->
+                <div class="service-section">
+                    <h4><span class="material-symbols-outlined">description</span> Описание</h4>
+                    <p class="service-description-text" id="modalDescription">
+                        Профессиональное возведение стен из кирпича, газоблока и других материалов. Гарантия качества.
+                    </p>
+                </div>
+
+                <!-- Characteristics -->
+                <div class="service-section">
+                    <h4><span class="material-symbols-outlined">tune</span> Характеристики</h4>
+                    <div class="characteristics-grid" id="modalCharacteristics">
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Опыт работы</span>
+                            <span class="characteristic-value">10 лет</span>
+                        </div>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Гарантия</span>
+                            <span class="characteristic-value">2 года</span>
+                        </div>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Срок выполнения</span>
+                            <span class="characteristic-value">от 3 дней</span>
+                        </div>
+                        <div class="characteristic-item">
+                            <span class="characteristic-label">Выезд</span>
+                            <span class="characteristic-value">Бесплатно</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photos -->
+                <div class="service-section">
+                    <h4><span class="material-symbols-outlined">photo_library</span> Фото работ</h4>
+                    <div class="photos-grid" id="modalPhotos">
+                        <div class="photo-item">🏗️</div>
+                        <div class="photo-item">🧱</div>
+                        <div class="photo-item">🔨</div>
+                    </div>
+                </div>
+
+                <!-- Worker Info -->
+                <div class="service-section">
+                    <h4><span class="material-symbols-outlined">person</span> Исполнитель</h4>
+                    <div class="worker-card">
+                        <div class="worker-photo" id="modalWorkerAvatar">МС</div>
+                        <div class="worker-details">
+                            <h5 id="modalWorkerName">Максим Светиков</h5>
+                            <p id="modalWorkerRole">Руководитель участка</p>
+                            <div class="worker-rating">
+                                <span class="material-symbols-outlined" style="color: #f59e0b;">star</span>
+                                <span id="modalWorkerRating">4.9</span>
+                                <span style="color: #94a3b8;">(127 отзывов)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="service-section reviews-section">
+                    <h4><span class="material-symbols-outlined">reviews</span> Отзывы <span style="color: #94a3b8; font-size: 16px;">(127)</span></h4>
+                    <div id="modalReviews">
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="review-author">Анна К.</span>
+                                <span class="review-date">15 февраля 2026</span>
+                            </div>
+                            <div class="review-text">
+                                Отличная работа! Стены возведены качественно и в срок. Рекомендую!
+                            </div>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="review-author">Сергей М.</span>
+                                <span class="review-date">10 февраля 2026</span>
+                            </div>
+                            <div class="review-text">
+                                Профессиональный подход. Все сделано аккуратно, мусор убран.
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" style="margin-top: 16px; width: 100%;" onclick="showAllReviews()">
+                        Показать все отзывы
+                    </button>
+                </div>
+
+                <!-- Actions -->
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="contactWorker()">
+                        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">chat</span>
+                        Написать
+                    </button>
+                    <button class="btn btn-success" onclick="orderService()">
+                        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">check_circle</span>
+                        Заказать услугу
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
@@ -379,69 +703,160 @@
                 id: 1,
                 title: "Строительство стен и перегородок",
                 description: "Профессиональное возведение стен из кирпича, газоблока и других материалов. Гарантия качества.",
+                fullDescription: "Мы предлагаем полный комплекс услуг по возведению стен и перегородок любой сложности. Работаем с кирпичом, газоблоком, пеноблоком и другими материалами. В стоимость входит доставка материалов, подготовка основания и уборка мусора после работ. Предоставляем гарантию 2 года на все виды работ.",
                 price: 2500,
                 category: "construction",
-                worker: "Максим С.",
+                worker: "Максим Светиков",
+                workerRole: "Руководитель участка",
+                workerId: "CN-29402",
                 rating: 4.9,
-                icon: "🏗️"
+                reviewsCount: 127,
+                icon: "🏗️",
+                characteristics: {
+                    "Опыт работы": "10 лет",
+                    "Гарантия": "2 года",
+                    "Срок выполнения": "от 3 дней",
+                    "Выезд": "Бесплатно"
+                },
+                photos: ["🏗️", "🧱", "🔨", "📐", "", ""],
+                reviews: [
+                    { author: "Анна К.", date: "15 февраля 2026", text: "Отличная работа! Стены возведены качественно и в срок. Рекомендую!" },
+                    { author: "Сергей М.", date: "10 февраля 2026", text: "Профессиональный подход. Все сделано аккуратно, мусор убран." },
+                    { author: "Ирина П.", date: "5 февраля 2026", text: "Хорошее соотношение цены и качества. Буду обращаться еще." }
+                ]
             },
             {
                 id: 2,
                 title: "Электромонтажные работы",
                 description: "Полная замена проводки, установка розеток, выключателей, светильников. Опыт 10 лет.",
+                fullDescription: "Выполняем электромонтажные работы любой сложности: от замены розетки до полной замены электропроводки в квартире или доме. Работаем только с качественными материалами. Предоставляем гарантию на все виды работ. Выезд и консультация бесплатно.",
                 price: 1500,
                 category: "electrical",
-                worker: "Алекс П.",
+                worker: "Алекс Петров",
+                workerRole: "Электрик",
+                workerId: "482910",
                 rating: 4.8,
-                icon: "⚡"
+                reviewsCount: 93,
+                icon: "⚡",
+                characteristics: {
+                    "Опыт работы": "10 лет",
+                    "Гарантия": "1 год",
+                    "Срок выполнения": "1-5 дней",
+                    "Выезд": "Бесплатно"
+                },
+                photos: ["⚡", "💡", "", "", "", ""],
+                reviews: [
+                    { author: "Дмитрий В.", date: "18 февраля 2026", text: "Быстро и качественно заменил всю проводку. Очень доволен!" },
+                    { author: "Елена С.", date: "12 февраля 2026", text: "Профессионал своего дела. Все объяснил, показал." }
+                ]
             },
             {
                 id: 3,
                 title: "Сантехнические услуги",
                 description: "Установка сантехники, устранение засоров, ремонт труб. Выезд в день обращения.",
+                fullDescription: "Предоставляем полный спектр сантехнических услуг: установка и ремонт сантехники, устранение засоров, замена труб, установка счетчиков воды. Работаем круглосуточно. Выезд мастера в течение часа.",
                 price: 1200,
                 category: "plumbing",
-                worker: "Иван Д.",
+                worker: "Иван Дудаев",
+                workerRole: "Сантехник",
+                workerId: "CN-11822",
                 rating: 4.7,
-                icon: "🔧"
+                reviewsCount: 156,
+                icon: "🔧",
+                characteristics: {
+                    "Опыт работы": "8 лет",
+                    "Гарантия": "6 месяцев",
+                    "Срок выполнения": "в день обращения",
+                    "Выезд": "Бесплатно"
+                },
+                photos: ["🔧", "🚿", "🚽", "🛁", "💧", "🔩"],
+                reviews: [
+                    { author: "Олег Н.", date: "20 февраля 2026", text: "Приехал через час, быстро устранил засор. Спасибо!" },
+                    { author: "Марина Л.", date: "14 февраля 2026", text: "Установил ванну и раковину. Все работает отлично." }
+                ]
             },
             {
                 id: 4,
                 title: "Ремонт квартир под ключ",
                 description: "Комплексный ремонт любой сложности. От косметического до евро ремонта.",
+                fullDescription: "Выполняем ремонт квартир под ключ любой сложности. Работаем по договору с фиксированной сметой. Предоставляем дизайн-проект бесплатно при заказе ремонта. Гарантия до 3 лет. Рассрочка 0%.",
                 price: 5000,
                 category: "repair",
-                worker: "Арсений А.",
+                worker: "Арсений Алхимов",
+                workerRole: "Прораб",
+                workerId: "CN-31294",
                 rating: 4.9,
-                icon: "🏠"
+                reviewsCount: 214,
+                icon: "🏠",
+                characteristics: {
+                    "Опыт работы": "15 лет",
+                    "Гарантия": "3 года",
+                    "Срок выполнения": "от 1 месяца",
+                    "Дизайн-проект": "Бесплатно"
+                },
+                photos: ["🏠", "", "", "️", "", ""],
+                reviews: [
+                    { author: "Александр Р.", date: "22 февраля 2026", text: "Сделали отличный ремонт в двушке. Все в срок и по смете." },
+                    { author: "Наталья К.", date: "16 февраля 2026", text: "Очень довольны результатом! Команда профессионалов." }
+                ]
             },
             {
                 id: 5,
                 title: "Укладка плитки",
                 description: "Профессиональная укладка плитки в ванной, на кухне, коридоре. Работаем с любым материалом.",
+                fullDescription: "Укладываем плитку любой сложности: керамическую, керамогранит, мозаику. Работаем с дизайнерской плиткой. Подготовка поверхности, затирка швов, герметизация. Гарантия качества.",
                 price: 1800,
                 category: "repair",
-                worker: "Азамат Д.",
+                worker: "Азамат Дудаев",
+                workerRole: "Плиточник",
+                workerId: "CN-11822",
                 rating: 4.8,
-                icon: "🔲"
+                reviewsCount: 89,
+                icon: "🔲",
+                characteristics: {
+                    "Опыт работы": "12 лет",
+                    "Гарантия": "2 года",
+                    "Срок выполнения": "3-7 дней",
+                    "Материалы": "Любые"
+                },
+                photos: ["🔲", "🛁", "🍳", "", "️", "🧪"],
+                reviews: [
+                    { author: "Виктор П.", date: "19 февраля 2026", text: "Плитка уложена идеально. Швы ровные, все красиво." }
+                ]
             },
             {
                 id: 6,
                 title: "Монтаж натяжных потолков",
                 description: "Быстрая установка натяжных потолков. Гарантия 10 лет. Бесплатный замер.",
+                fullDescription: "Устанавливаем натяжные потолки любой сложности: глянцевые, матовые, сатиновые, многоуровневые. Работаем с фотопечатью. Бесплатный замер и консультация. Монтаж за 1 день. Гарантия 10 лет.",
                 price: 800,
                 category: "repair",
-                worker: "Антон С.",
+                worker: "Антон Спартак",
+                workerRole: "Монтажник",
+                workerId: "CN-44091",
                 rating: 4.6,
-                icon: ""
+                reviewsCount: 178,
+                icon: "🎪",
+                characteristics: {
+                    "Опыт работы": "7 лет",
+                    "Гарантия": "10 лет",
+                    "Срок выполнения": "1 день",
+                    "Замер": "Бесплатно"
+                },
+                photos: ["🎪", "💡", "✨", "📐", "", ""],
+                reviews: [
+                    { author: "Светлана Д.", date: "21 февраля 2026", text: "Установили потолок за 3 часа. Очень быстро и аккуратно!" }
+                ]
             }
         ];
+
+        let currentService = null;
 
         // Отображение услуг
         function renderServices(servicesToRender) {
             const grid = document.getElementById('servicesGrid');
             grid.innerHTML = servicesToRender.map(service => `
-                <div class="service-card" onclick="showServiceDetails(${service.id})">
+                <div class="service-card" onclick="openServiceModal(${service.id})">
                     <div class="service-image">${service.icon}</div>
                     <div class="service-info">
                         <div class="service-price">${service.price} ₽/час</div>
@@ -460,6 +875,65 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        // Открытие модального окна услуги
+        function openServiceModal(id) {
+            const service = services.find(s => s.id === id);
+            if (!service) return;
+
+            currentService = service;
+
+            // Заполняем данные
+            document.getElementById('modalIcon').textContent = service.icon;
+            document.getElementById('modalTitle').textContent = service.title;
+            document.getElementById('modalPrice').textContent = `${service.price} ₽/час`;
+            document.getElementById('modalDescription').textContent = service.fullDescription;
+            
+            // Характеристики
+            const charsHtml = Object.entries(service.characteristics).map(([label, value]) => `
+                <div class="characteristic-item">
+                    <span class="characteristic-label">${label}</span>
+                    <span class="characteristic-value">${value}</span>
+                </div>
+            `).join('');
+            document.getElementById('modalCharacteristics').innerHTML = charsHtml;
+
+            // Фото
+            const photosHtml = service.photos.map(photo => `
+                <div class="photo-item">${photo}</div>
+            `).join('');
+            document.getElementById('modalPhotos').innerHTML = photosHtml;
+
+            // Исполнитель
+            const initials = service.worker.split(' ').map(n => n[0]).join('');
+            document.getElementById('modalWorkerAvatar').textContent = initials;
+            document.getElementById('modalWorkerName').textContent = service.worker;
+            document.getElementById('modalWorkerRole').textContent = service.workerRole;
+            document.getElementById('modalWorkerRating').textContent = service.rating;
+
+            // Отзывы
+            const reviewsHtml = service.reviews.map(review => `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${review.author}</span>
+                        <span class="review-date">${review.date}</span>
+                    </div>
+                    <div class="review-text">${review.text}</div>
+                </div>
+            `).join('');
+            document.getElementById('modalReviews').innerHTML = reviewsHtml;
+
+            // Показываем модалку
+            document.getElementById('serviceModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Закрытие модального окна
+        function closeServiceModal() {
+            document.getElementById('serviceModal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentService = null;
         }
 
         // Фильтрация услуг
@@ -490,13 +964,35 @@
             renderServices(filtered);
         }
 
-        // Показать детали услуги
-        function showServiceDetails(id) {
-            const service = services.find(s => s.id === id);
-            alert(`Услуга: ${service.title}\nРаботник: ${service.worker}\nЦена: ${service.price} ₽/час\nРейтинг: ${service.rating}\n\nДля заказа войдите в систему!`);
+        // Показать все отзывы
+        function showAllReviews() {
+            if (currentService) {
+                alert(`Все отзывы (${currentService.reviewsCount}):\\n\\nЗдесь будет полная страница с отзывами`);
+            }
         }
 
-        // Модальные окна
+        // Связаться с работником
+        function contactWorker() {
+            if (currentService) {
+                alert(`Сообщение для ${currentService.worker}:\\n\\nЗдесь откроется чат с исполнителем`);
+            }
+        }
+
+        // Заказать услугу
+        function orderService() {
+            if (currentService) {
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    alert('Для заказа услуги необходимо войти в систему!');
+                    closeServiceModal();
+                    openLoginModal();
+                } else {
+                    alert(`Заказ услуги:\\n${currentService.title}\\nИсполнитель: ${currentService.worker}\\nЦена: ${currentService.price} ₽/час\\n\\nЗдесь будет форма заказа`);
+                }
+            }
+        }
+
+        // Модальные окна входа
         function openLoginModal() {
             document.getElementById('loginModal').classList.add('active');
         }
@@ -546,8 +1042,12 @@
 
         // Закрытие модалки при клике вне
         window.onclick = function(event) {
-            const modal = document.getElementById('loginModal');
+            const modal = document.getElementById('serviceModal');
             if (event.target === modal) {
+                closeServiceModal();
+            }
+            const loginModal = document.getElementById('loginModal');
+            if (event.target === loginModal) {
                 closeLoginModal();
             }
         }
