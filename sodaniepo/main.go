@@ -192,9 +192,9 @@ func main() {
 		http.Redirect(w, r, "/auto.html", http.StatusTemporaryRedirect)
 	})
 
-	fmt.Println("🚀 Сервер: http://localhost:8080")
-	fmt.Println("👨‍💼 Admin: admin@tracking-system.com / admin123")
-	fmt.Println("👤 Customer: customer@test.com / customer123")
+	fmt.Println(" Сервер: http://localhost:8080")
+	fmt.Println(" Владелец обьявления: admin@tracking-system.com / 12345")
+	fmt.Println(" Покупатель: customer@test.com / customer123")
 
 	http.ListenAndServe(":8080", r)
 }

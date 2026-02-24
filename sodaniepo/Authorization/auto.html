@@ -1143,5 +1143,115 @@ async function submitOrder(event) {
             }
         }
     </script>
+    <script>
+// Обработка формы входа
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.querySelector('.modal-body form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Сохраняем токен и роль
+                    localStorage.setItem('token', data.accessToken);
+                    localStorage.setItem('role', data.role);
+                    
+                    // Перенаправляем в зависимости от роли
+                    if (data.role === 'admin') {
+                        window.location.href = '/admin.html';
+                    } else if (data.role === 'customer') {
+                        window.location.href = '/customer.html';
+                    }
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                alert('Ошибка подключения к серверу');
+            }
+        });
+    }
+});
+</script>
+<script>
+// Обработка формы входа
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.querySelector('.modal-body form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '⏳ Вход...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('token', data.accessToken);
+                    localStorage.setItem('role', data.role);
+                    
+                    if (data.role === 'admin') {
+                        window.location.href = '/admin.html';
+                    } else if (data.role === 'customer') {
+                        window.location.href = '/customer.html';
+                    }
+                } else {
+                    alert('❌ ' + data.message);
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                alert('❌ Ошибка подключения к серверу');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});
+
+// Закрытие модального окна
+function closeModal() {
+    const modal = document.querySelector('.modal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+</script>
 </body>
 </html>

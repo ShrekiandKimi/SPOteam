@@ -5,191 +5,485 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет клиента</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="Authorization/styles.css">
+    <link rel="stylesheet" href="/styles.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Manrope', sans-serif; background: #f5f5f5; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #f6f6f8;
+            min-height: 100vh;
+        }
         
         .header {
-            background: white; padding: 16px 40px;
-            display: flex; justify-content: space-between; align-items: center;
+            background: white;
+            padding: 16px 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .logo { display: flex; align-items: center; gap: 12px; }
-        .logo .material-symbols-outlined { font-size: 36px; color: #135bec; }
-        .logo h1 { font-size: 24px; color: #1e293b; }
         
-        .user-menu { display: flex; align-items: center; gap: 16px; }
-        .user-info { text-align: right; }
-        .user-info h3 { font-size: 14px; color: #1e293b; }
-        .user-info p { font-size: 12px; color: #64748b; }
-        
-        .logout-btn {
-            display: flex; align-items: center; gap: 8px;
-            padding: 8px 16px; background: #fee2e2; color: #dc2626;
-            border: none; border-radius: 8px; cursor: pointer;
-            font-size: 14px; font-weight: 500;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .logout-btn:hover { background: #fecaca; }
         
-        .main-content { padding: 40px; max-width: 1200px; margin: 0 auto; }
-        
-        .welcome-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; padding: 32px; border-radius: 12px;
-            margin-bottom: 24px;
+        .header-logo {
+            font-size: 24px;
         }
-        .welcome-card h2 { font-size: 28px; margin-bottom: 8px; }
-        .welcome-card p { opacity: 0.9; }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .customer-name {
+            font-weight: 500;
+            color: #1e293b;
+        }
+        
+        .btn-logout {
+            padding: 8px 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, #135bec 0%, #0d4bd6 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
         
         .orders-section {
-            background: white; padding: 24px; border-radius: 12px;
+            background: white;
+            border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-        .orders-section h3 { font-size: 20px; color: #1e293b; margin-bottom: 20px; }
+        
+        .orders-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .orders-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .btn-services {
+            padding: 10px 20px;
+            background: #135bec;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-services:hover {
+            background: #0d4bd6;
+            transform: translateY(-1px);
+        }
+        
+        .orders-list {
+            padding: 0;
+        }
         
         .order-card {
-            border: 1px solid #e2e8f0; border-radius: 8px;
-            padding: 20px; margin-bottom: 16px;
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
         }
-        .order-header {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 12px;
-        }
-        .order-title { font-size: 18px; font-weight: 600; color: #1e293b; }
-        .order-status {
-            padding: 6px 12px; border-radius: 20px;
-            font-size: 13px; font-weight: 600;
-        }
-        .status-pending { background: #fef3c7; color: #d97706; }
-        .status-accepted { background: #dbeafe; color: #135bec; }
-        .status-completed { background: #d1fae5; color: #10b981; }
-        .status-rejected { background: #fee2e2; color: #dc2626; }
         
-        .order-info { color: #64748b; font-size: 14px; margin-bottom: 8px; }
-        .order-price { font-size: 20px; font-weight: 700; color: #135bec; }
-        .order-date { color: #94a3b8; font-size: 13px; margin-top: 8px; }
+        .order-card:hover {
+            background: #f8fafc;
+        }
+        
+        .order-card:last-child {
+            border-bottom: none;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .order-id {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .order-id span {
+            font-weight: 600;
+            color: #135bec;
+        }
+        
+        .order-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .order-service {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .order-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .order-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .order-date {
+            font-size: 13px;
+            color: #94a3b8;
+        }
         
         .empty-state {
-            text-align: center; padding: 60px 20px; color: #94a3b8;
-        }
-        .empty-state .material-symbols-outlined {
-            font-size: 64px; margin-bottom: 16px;
+            padding: 60px 24px;
+            text-align: center;
+            color: #64748b;
         }
         
-        .btn {
-            padding: 10px 20px; border-radius: 8px;
-            font-weight: 600; cursor: pointer; border: none;
-            font-family: 'Manrope', sans-serif;
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
         }
-        .btn-primary { background: #135bec; color: white; }
-        .btn-primary:hover { background: #0d4bd6; }
+        
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .empty-text {
+            margin-bottom: 24px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 24px;
+            color: #64748b;
+        }
+        
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top-color: #135bec;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .order-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="logo">
-            <span class="material-symbols-outlined">home</span>
-            <h1>Личный кабинет клиента</h1>
+        <div class="header-left">
+            <span class="header-logo">🏠</span>
+            <span class="header-title">Личный кабинет клиента</span>
         </div>
-        <div class="user-menu">
-            <div class="user-info">
-                <h3 id="customerName">Загрузка...</h3>
-                <p>Клиент</p>
+        <div class="header-right">
+            <div class="customer-info">
+                <div class="customer-avatar" id="customerAvatar">C</div>
+                <span class="customer-name" id="customerName">Загрузка...</span>
             </div>
-            <button class="logout-btn" onclick="logout()">
-                <span class="material-symbols-outlined">logout</span>
-                Выйти
-            </button>
+            <button class="btn-logout" onclick="logout()">🚪 Выйти</button>
         </div>
     </header>
-
-    <div class="main-content">
-        <div class="welcome-card">
-            <h2 id="greeting">Добро пожаловать!</h2>
-            <p>Здесь вы можете отслеживать статус ваших заказов</p>
+    
+    <div class="container">
+        <div class="welcome-section">
+            <h1 class="welcome-title" id="welcomeTitle">Добро пожаловать!</h1>
+            <p class="welcome-subtitle">Здесь вы можете отслеживать статус ваших заказов</p>
         </div>
-
+        
         <div class="orders-section">
-            <h3>📋 Мои заказы</h3>
-            <div id="ordersList">
-                <div class="empty-state">
-                    <span class="material-symbols-outlined">inbox</span>
-                    <p>У вас пока нет заказов</p>
-                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="window.location.href='/auto.html'">
-                        <span class="material-symbols-outlined" style="vertical-align: middle;">shopping_bag</span>
-                        Перейти к услугам
-                    </button>
+            <div class="orders-header">
+                <h2 class="orders-title">📋 Мои заказы</h2>
+                <a href="/auto.html#services" class="btn-services">
+                    🛍️ Перейти к услугам
+                </a>
+            </div>
+            <div class="orders-list" id="ordersList">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Загрузка заказов...</p>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const token = localStorage.getItem('accessToken');
-            const role = localStorage.getItem('userRole');
-
+        // Проверка авторизации при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            await loadOrders();
+        });
+        
+        // Проверка токена
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            
             if (!token || role !== 'customer') {
                 window.location.href = '/auto.html';
                 return;
             }
-
-            // Загрузка данных клиента
-            fetch('/api/validate-token', {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + token }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.valid) {
-                    document.getElementById('customerName').textContent = data.name;
-                    document.getElementById('greeting').textContent = 'Добро пожаловать, ' + data.name.split(' ')[0] + '!';
-                    loadOrders();
-                } else {
-                    logout();
+            
+            try {
+                const response = await fetch('/api/validate-token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (!data.valid) {
+                    localStorage.clear();
+                    window.location.href = '/auto.html';
+                    return;
                 }
-            })
-            .catch(() => logout());
-        });
-
-        function loadOrders() {
-            const token = localStorage.getItem('accessToken');
-            fetch('/api/get-customer-orders', {
-                method: 'GET',
-                headers: { 'Authorization': 'Bearer ' + token }
-            })
-            .then(res => res.json())
-            .then(data => {
-                const list = document.getElementById('ordersList');
-                if (data.success && data.orders.length > 0) {
-                    list.innerHTML = data.orders.map(order => `
-                        <div class="order-card">
-                            <div class="order-header">
-                                <span class="order-title">${order.service_title}</span>
-                                <span class="order-status status-${order.status}">${getStatusText(order.status)}</span>
-                            </div>
-                            <div class="order-info">${order.service_description || 'Без описания'}</div>
-                            <div class="order-price">${order.price} ₽</div>
-                            <div class="order-date">📅 ${new Date(order.created_at).toLocaleDateString('ru-RU')}</div>
+                
+                // Отображаем информацию клиента
+                document.getElementById('customerName').textContent = data.name || 'Клиент';
+                document.getElementById('customerAvatar').textContent = (data.name || 'C')[0].toUpperCase();
+                document.getElementById('welcomeTitle').textContent = `Добро пожаловать, ${data.name || 'Клиент'}!`;
+                
+            } catch (error) {
+                console.error('Ошибка проверки токена:', error);
+                localStorage.clear();
+                window.location.href = '/auto.html';
+            }
+        }
+        
+        // Загрузка заказов
+        async function loadOrders() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/get-customer-orders', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showEmptyState('Ошибка загрузки заказов', 'Попробуйте обновить страницу');
+                    return;
+                }
+                
+                renderOrders(data.orders);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки заказов:', error);
+                showEmptyState('Ошибка подключения к серверу', 'Проверьте соединение');
+            }
+        }
+        
+        // Отрисовка заказов
+        function renderOrders(orders) {
+            const ordersList = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                showEmptyState('У вас пока нет заказов', 'Выберите услугу и оформите первый заказ!');
+                return;
+            }
+            
+            let html = '';
+            orders.forEach(order => {
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+                const date = new Date(order.created_at).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-id">Заказ <span>#${order.id}</span></div>
+                            <span class="order-status ${statusClass}">${statusText}</span>
                         </div>
-                    `).join('');
-                }
-            })
-            .catch(err => console.error(err));
+                        <h3 class="order-service">${order.service_title}</h3>
+                        <p class="order-description">${order.service_description || 'Описание услуги'}</p>
+                        <div class="order-footer">
+                            <div class="order-price">${order.price} ₽</div>
+                            <div class="order-date">📅 ${date}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            ordersList.innerHTML = html;
         }
-
-        function getStatusText(status) {
-            const map = {
-                'pending': '⏳ В ожидании',
-                'accepted': '✅ Принят',
-                'completed': '✨ Выполнен',
-                'rejected': '❌ Отклонён'
+        
+        // Вспомогательные функции
+        function getStatusClass(status) {
+            const classes = {
+                'pending': 'status-pending',
+                'in_progress': 'status-in-progress',
+                'completed': 'status-completed',
+                'cancelled': 'status-cancelled'
             };
-            return map[status] || status;
+            return classes[status] || 'status-pending';
         }
-
+        
+        function getStatusText(status) {
+            const texts = {
+                'pending': '⏳ В ожидании',
+                'in_progress': '🔧 В работе',
+                'completed': '✅ Выполнено',
+                'cancelled': '❌ Отменено'
+            };
+            return texts[status] || status;
+        }
+        
+        function showEmptyState(title, text) {
+            document.getElementById('ordersList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h3 class="empty-title">${title}</h3>
+                    <p class="empty-text">${text}</p>
+                    <a href="/auto.html#services" class="btn-services">🛍️ Перейти к услугам</a>
+                </div>
+            `;
+        }
+        
+        // Выход из системы
         function logout() {
             localStorage.clear();
             window.location.href = '/auto.html';
