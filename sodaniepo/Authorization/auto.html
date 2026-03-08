@@ -9,12 +9,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <style>
-/* ===== LAYOUT STYLES ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #f5f5f5; }
+body { background: #f5f5f5; font-family: 'Manrope', sans-serif; }
 html { scroll-behavior: smooth; }
-
-/* Header */
 .header { background: white; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo .material-symbols-outlined { font-size: 36px; color: #135bec; }
@@ -35,23 +32,19 @@ html { scroll-behavior: smooth; }
 .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; color: #475569; text-decoration: none; transition: all 0.2s; font-size: 14px; }
 .dropdown-item:hover { background: #f8fafc; color: #135bec; }
 .dropdown-item:first-child { border-bottom: 1px solid #f1f5f9; }
-
-/* Buttons */
 .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-family: 'Manrope', sans-serif; font-size: 14px; }
 .btn-outline { background: transparent; border: 2px solid #135bec; color: #135bec; }
 .btn-outline:hover { background: #135bec; color: white; }
+.btn-primary { background: #135bec; color: white; }
+.btn-primary:hover { background: #0d4bd6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(19, 91, 236, 0.3); }
 .btn-success { background: #10b981; color: white; }
 .btn-success:hover { background: #059669; }
-
-/* Hero */
 .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 40px; text-align: center; }
 .hero h2 { font-size: 48px; margin-bottom: 16px; font-weight: 800; }
 .hero p { font-size: 20px; margin-bottom: 32px; opacity: 0.95; }
 .search-box { max-width: 700px; margin: 0 auto; display: flex; gap: 12px; }
 .search-box input { flex: 1; padding: 16px 24px; border: none; border-radius: 12px; font-size: 16px; font-family: 'Manrope', sans-serif; }
 .search-box button { padding: 16px 32px; background: #135bec; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 16px; }
-
-/* About Section */
 .about-section { padding: 50px 40px; background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); }
 .about-container { max-width: 1200px; margin: 0 auto; }
 .about-header { text-align: center; margin-bottom: 40px; }
@@ -72,8 +65,6 @@ html { scroll-behavior: smooth; }
 .about-image { display: flex; justify-content: center; align-items: center; }
 .image-placeholder { width: 100%; max-width: 350px; height: 250px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25); }
 .image-placeholder .material-symbols-outlined { font-size: 80px; color: white; opacity: 0.9; }
-
-/* Footer */
 .footer { background: #1e293b; color: white; padding: 60px 40px 0; }
 .footer-container { max-width: 1200px; margin: 0 auto; }
 .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
@@ -95,8 +86,6 @@ html { scroll-behavior: smooth; }
 .social-link[href*="t.me"]:hover { background: #229ED9; }
 .social-link.max-link:hover { background: #FF6B00; }
 .footer-bottom { border-top: 1px solid #334155; padding: 24px 0; text-align: center; color: #94a3b8; font-size: 14px; }
-
-/* Services */
 .services-section { padding: 60px 40px; max-width: 1400px; margin: 0 auto; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
 .section-header h3 { font-size: 32px; color: #1e293b; }
@@ -115,8 +104,27 @@ html { scroll-behavior: smooth; }
 .worker-avatar { width: 32px; height: 32px; border-radius: 50%; background: #135bec; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
 .worker-name { font-weight: 500; color: #475569; font-size: 14px; }
 .service-rating { display: flex; align-items: center; gap: 4px; color: #f59e0b; font-weight: 600; }
-
-/* Service Modal */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: white; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideIn 0.3s ease; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; }
+.modal-header h2 { margin: 0; font-size: 1.25rem; color: #1e293b; }
+.modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #64748b; line-height: 1; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+.modal-close:hover { background: #f1f5f9; color: #1e293b; }
+.modal-body { padding: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 8px; color: #475569; font-size: 14px; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Manrope', sans-serif; }
+.form-group input:focus { outline: none; border-color: #135bec; box-shadow: 0 0 0 3px rgba(19, 91, 236, 0.1); }
+.form-error { color: #ef4444; font-size: 12px; margin-top: 4px; display: none; }
+.form-error.active { display: block; }
+.role-selector { display: flex; gap: 12px; margin-top: 8px; }
+.role-option { flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; }
+.role-option:hover { border-color: #135bec; background: #f8fafc; }
+.role-option.selected { border-color: #135bec; background: #eff6ff; }
+.role-option input { margin-right: 8px; }
+.role-option .role-title { font-weight: 600; display: block; margin-top: 4px; }
+.role-option .role-desc { font-size: 11px; color: #64748b; margin-top: 2px; }
 .service-modal .modal-content { max-width: 900px; width: 95%; }
 .service-modal-header { position: relative; height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 120px; }
 .service-modal-close { position: absolute; top: 20px; right: 20px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
@@ -150,8 +158,6 @@ html { scroll-behavior: smooth; }
 .show-all-reviews a:hover { text-decoration: underline; }
 .modal-actions { display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
 .modal-actions .btn { flex: 1; padding: 16px; font-size: 16px; }
-
-/* Contact Modal */
 .contact-option { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 8px; text-decoration: none; color: #1e293b; transition: all 0.2s; margin-bottom: 12px; cursor: pointer; }
 .contact-option:hover { transform: translateY(-2px); }
 .contact-option.telegram { background: #f0f9ff; }
@@ -163,702 +169,809 @@ html { scroll-behavior: smooth; }
 .contact-icon.max { background: #FF6B00; color: white; font-weight: 700; font-size: 12px; }
 .contact-info div:first-child { font-weight: 600; font-size: 14px; }
 .contact-info div:last-child { font-size: 13px; color: #64748b; }
-
-/* Form inputs */
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; margin-bottom: 8px; color: #475569; font-size: 14px; }
-.form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Manrope', sans-serif; }
-
 @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
 @media (max-width: 768px) {
-    .about-content { grid-template-columns: 1fr; }
-    .about-header h2 { font-size: 26px; }
-    .hero h2 { font-size: 32px; }
-    .nav-links { display: none; }
-    .header { padding: 16px 20px; }
-    .about-section { padding: 40px 20px; }
-    .services-section { padding: 40px 20px; }
-    .footer { padding: 40px 20px 0; }
+.about-content { grid-template-columns: 1fr; }
+.about-header h2 { font-size: 26px; }
+.hero h2 { font-size: 32px; }
+.nav-links { display: none; }
+.header { padding: 16px 20px; }
+.about-section { padding: 40px 20px; }
+.services-section { padding: 40px 20px; }
+.footer { padding: 40px 20px 0; }
 }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <header class="header">
-    <div class="logo">
-        <span class="material-symbols-outlined">engineering</span>
-        <h1>Staff Tracking</h1>
+  <div class="logo">
+    <span class="material-symbols-outlined">engineering</span>
+    <h1>Staff Tracking</h1>
+  </div>
+  <nav class="nav-links">
+    <a href="#services">Услуги</a>
+    <a href="#about">О нас</a>
+    <a href="#contacts">Контакты</a>
+  </nav>
+  <div class="auth-buttons" id="authButtons">
+    <button class="btn btn-outline" onclick="openLoginModal()">Войти</button>
+    <button class="btn btn-primary" onclick="openRegisterModal()">Регистрация</button>
+  </div>
+  <div class="user-menu" id="userMenu">
+    <div class="user-info" onclick="toggleUserDropdown()">
+      <span class="user-avatar">👤</span>
+      <span id="userName" class="user-name">Загрузка...</span>
+      <span class="dropdown-arrow">▼</span>
     </div>
-    <nav class="nav-links">
-        <a href="#services">Услуги</a>
-        <a href="#about">О нас</a>
-        <a href="#contacts">Контакты</a>
-    </nav>
-    
-    <div class="auth-buttons" id="authButtons">
-        <button class="btn btn-outline" onclick="openLoginModal()">Войти</button>
-        <button class="btn btn-primary" onclick="openRegisterModal()">Регистрация</button>
+    <div id="userDropdown" class="user-dropdown">
+      <a href="#" id="dashboardLink" class="dropdown-item">📋 Мои заказы</a>
+      <a href="#" class="dropdown-item" onclick="logout(); return false;">🚪 Выйти</a>
     </div>
-    
-    <div class="user-menu" id="userMenu">
-        <div class="user-info" onclick="toggleUserDropdown()">
-            <span class="user-avatar">👤</span>
-            <span id="userName" class="user-name">Загрузка...</span>
-            <span class="dropdown-arrow">▼</span>
-        </div>
-        <div id="userDropdown" class="user-dropdown">
-            <a href="#" id="dashboardLink" class="dropdown-item">📋 Мои заказы</a>
-            <a href="#" class="dropdown-item" onclick="logout(); return false;">🚪 Выйти</a>
-        </div>
-    </div>
+  </div>
 </header>
 
+<!-- Hero -->
 <section class="hero">
-    <h2>Найдите лучших специалистов</h2>
-    <p>Тысячи профессионалов готовы выполнить вашу работу</p>
-    <div class="search-box">
-        <input type="text" placeholder="Какую услугу вы ищете?" id="searchInput">
-        <button onclick="searchServices()">
-            <span class="material-symbols-outlined" style="vertical-align: middle;">search</span>
-            Найти
-        </button>
-    </div>
+  <h2>Найдите лучших специалистов</h2>
+  <p>Тысячи профессионалов готовы выполнить вашу работу</p>
+  <div class="search-box">
+    <input type="text" placeholder="Какую услугу вы ищете?" id="searchInput">
+    <button onclick="searchServices()">
+      <span class="material-symbols-outlined" style="vertical-align: middle;">search</span>
+      Найти
+    </button>
+  </div>
 </section>
 
+<!-- About -->
 <section class="about-section" id="about">
-    <div class="about-container">
-        <div class="about-header">
-            <h2>О компании Staff Tracking</h2>
-            <p>Профессиональные решения для вашего дома: находим лучших мастеров для воплощения ваших идей</p>
-        </div>
-        
-        <div class="about-stats">
-            <div class="stat-card">
-                <div class="stat-icon">👷</div>
-                <div class="stat-number">5000+</div>
-                <div class="stat-label">Проверенных специалистов</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-number">98%</div>
-                <div class="stat-label">Положительных отзывов</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-number">10+</div>
-                <div class="stat-label">Лет на рынке</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⚡</div>
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">Поддержка</div>
-            </div>
-        </div>
-        
-        <div class="about-content">
-            <div class="about-text">
-                <h3>Почему выбирают нас?</h3>
-                <p>Staff Tracking — это современная платформа для поиска квалифицированных специалистов в сфере строительства, ремонта и благоустройства.</p>
-                
-                <div class="about-features">
-                    <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Проверенные специалисты</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Гарантия качества</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Прозрачные цены</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">✓</span>
-                        <span>Быстрый подбор</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-image">
-                <div class="image-placeholder">
-                    <span class="material-symbols-outlined">groups</span>
-                </div>
-            </div>
-        </div>
+  <div class="about-container">
+    <div class="about-header">
+      <h2>О компании Staff Tracking</h2>
+      <p>Профессиональные решения для вашего дома: находим лучших мастеров для воплощения ваших идей</p>
     </div>
+    <div class="about-stats">
+      <div class="stat-card"><div class="stat-icon">👷</div><div class="stat-number">5000+</div><div class="stat-label">Проверенных специалистов</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-number">98%</div><div class="stat-label">Положительных отзывов</div></div>
+      <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-number">10+</div><div class="stat-label">Лет на рынке</div></div>
+      <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-number">24/7</div><div class="stat-label">Поддержка</div></div>
+    </div>
+    <div class="about-content">
+      <div class="about-text">
+        <h3>Почему выбирают нас?</h3>
+        <p>Staff Tracking — это современная платформа для поиска квалифицированных специалистов в сфере строительства, ремонта и благоустройства.</p>
+        <div class="about-features">
+          <div class="feature-item"><span class="feature-icon">✓</span><span>Проверенные специалисты</span></div>
+          <div class="feature-item"><span class="feature-icon">✓</span><span>Гарантия качества</span></div>
+          <div class="feature-item"><span class="feature-icon">✓</span><span>Прозрачные цены</span></div>
+          <div class="feature-item"><span class="feature-icon">✓</span><span>Быстрый подбор</span></div>
+        </div>
+      </div>
+      <div class="about-image"><div class="image-placeholder"><span class="material-symbols-outlined">groups</span></div></div>
+    </div>
+  </div>
 </section>
 
+<!-- Services -->
 <section class="services-section" id="services">
-    <div class="section-header">
-        <h3>Популярные услуги</h3>
-        <div class="filters">
-            <select id="categoryFilter" onchange="filterServices()">
-                <option value="">Все категории</option>
-                <option value="construction">Строительство</option>
-                <option value="repair">Ремонт</option>
-                <option value="electrical">Электрика</option>
-                <option value="plumbing">Сантехника</option>
-            </select>
-            <input type="number" placeholder="Цена до" id="priceFilter" onchange="filterServices()">
-        </div>
+  <div class="section-header">
+    <h3>Популярные услуги</h3>
+    <div class="filters">
+      <select id="categoryFilter" onchange="filterServices()">
+        <option value="">Все категории</option>
+        <option value="construction">Строительство</option>
+        <option value="repair">Ремонт</option>
+        <option value="electrical">Электрика</option>
+        <option value="plumbing">Сантехника</option>
+      </select>
+      <input type="number" placeholder="Цена до" id="priceFilter" onchange="filterServices()">
     </div>
-    <div class="services-grid" id="servicesGrid"></div>
+  </div>
+  <div class="services-grid" id="servicesGrid"></div>
 </section>
 
+<!-- Footer -->
 <footer class="footer" id="contacts">
-    <div class="footer-container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Staff Tracking</h3>
-                <p>Находим лучших специалистов для реализации ваших проектов. Качество, надежность и профессионализм — наши главные принципы.</p>
-                <div class="social-links">
-                    <a href="https://vk.com/ваша_группа" target="_blank" class="social-link" title="ВКонтакте">
-                        <i class="fab fa-vk"></i>
-                    </a>
-                    <a href="https://t.me/ваш_канал" target="_blank" class="social-link" title="Telegram">
-                        <i class="fab fa-telegram"></i>
-                    </a>
-                    <a href="https://max.ru/ваш_профиль" target="_blank" class="social-link max-link" title="MAX">
-                        <span>MAX</span>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Разделы</h4>
-                <ul class="footer-links">
-                    <li><a href="#services">Услуги</a></li>
-                    <li><a href="#about">О нас</a></li>
-                    <li><a href="#contacts">Контакты</a></li>
-                    <li><a href="#">Политика конфиденциальности</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Популярные услуги</h4>
-                <ul class="footer-links">
-                    <li><a href="#">Строительство</a></li>
-                    <li><a href="#">Ремонт квартир</a></li>
-                    <li><a href="#">Электрика</a></li>
-                    <li><a href="#">Сантехника</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Контакты</h4>
-                <ul class="footer-contact">
-                    <li>📞 +7 (999) 123-45-67</li>
-                    <li>✉️ info@stafftracking.ru</li>
-                    <li>📍 г. Москва, ул. Примерная, 123</li>
-                    <li>🕐 Пн-Пт: 9:00 - 20:00</li>
-                </ul>
-            </div>
+  <div class="footer-container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Staff Tracking</h3>
+        <p>Находим лучших специалистов для реализации ваших проектов. Качество, надежность и профессионализм — наши главные принципы.</p>
+        <div class="social-links">
+          <a href="https://vk.com/ваша_группа" target="_blank" class="social-link" title="ВКонтакте"><i class="fab fa-vk"></i></a>
+          <a href="https://t.me/ваш_канал" target="_blank" class="social-link" title="Telegram"><i class="fab fa-telegram"></i></a>
+          <a href="https://max.ru/ваш_профиль" target="_blank" class="social-link max-link" title="MAX"><span>MAX</span></a>
         </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2026 Staff Tracking. Все права защищены.</p>
-        </div>
+      </div>
+      <div class="footer-section">
+        <h4>Разделы</h4>
+        <ul class="footer-links">
+          <li><a href="#services">Услуги</a></li>
+          <li><a href="#about">О нас</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+          <li><a href="#">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Популярные услуги</h4>
+        <ul class="footer-links">
+          <li><a href="#">Строительство</a></li>
+          <li><a href="#">Ремонт квартир</a></li>
+          <li><a href="#">Электрика</a></li>
+          <li><a href="#">Сантехника</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Контакты</h4>
+        <ul class="footer-contact">
+          <li>📞 +7 (999) 123-45-67</li>
+          <li>✉️ info@stafftracking.ru</li>
+          <li>📍 г. Москва, ул. Примерная, 123</li>
+          <li>🕐 Пн-Пт: 9:00 - 20:00</li>
+        </ul>
+      </div>
     </div>
+    <div class="footer-bottom"><p>&copy; 2026 Staff Tracking. Все права защищены.</p></div>
+  </div>
 </footer>
 
 <!-- Service Modal -->
 <div id="serviceModal" class="modal service-modal">
-    <div class="modal-content">
-        <div class="service-modal-header">
-            <button class="service-modal-close" onclick="closeServiceModal()">×</button>
-            <span id="modalIcon">🏗️</span>
-        </div>
-        <div class="service-modal-body">
-            <h2 class="service-modal-title" id="modalTitle"></h2>
-            <div class="service-modal-price" id="modalPrice"></div>
-            <div class="service-section">
-                <h4><span class="material-symbols-outlined">description</span> Описание</h4>
-                <p class="service-description-text" id="modalDescription"></p>
-            </div>
-            <div class="service-section">
-                <h4><span class="material-symbols-outlined">tune</span> Характеристики</h4>
-                <div class="characteristics-grid" id="modalCharacteristics"></div>
-            </div>
-            <div class="service-section">
-                <h4><span class="material-symbols-outlined">photo_library</span> Фото работ</h4>
-                <div class="photos-grid" id="modalPhotos"></div>
-            </div>
-            <div class="service-section">
-                <h4><span class="material-symbols-outlined">person</span> Исполнитель</h4>
-                <div class="worker-card">
-                    <div class="worker-photo" id="modalWorkerAvatar"></div>
-                    <div class="worker-details">
-                        <h5 id="modalWorkerName"></h5>
-                        <p id="modalWorkerRole"></p>
-                        <div class="worker-rating">
-                            <span class="material-symbols-outlined" style="color: #f59e0b;">star</span>
-                            <span id="modalWorkerRating"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="service-section reviews-section">
-                <h4><span class="material-symbols-outlined">reviews</span> Последние отзывы</h4>
-                <div id="modalReviews"></div>
-                <div id="showAllReviews" class="show-all-reviews">
-                    <a onclick="showAllReviews()">Показать все отзывы →</a>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="contactWorker()">Написать</button>
-                <button class="btn btn-success" onclick="orderService()">Заказать услугу</button>
-            </div>
-        </div>
+  <div class="modal-content">
+    <div class="service-modal-header">
+      <button class="service-modal-close" onclick="closeServiceModal()">×</button>
+      <span id="modalIcon">🏗️</span>
     </div>
+    <div class="service-modal-body">
+      <h2 class="service-modal-title" id="modalTitle"></h2>
+      <div class="service-modal-price" id="modalPrice"></div>
+      <div class="service-section">
+        <h4><span class="material-symbols-outlined">description</span> Описание</h4>
+        <p class="service-description-text" id="modalDescription"></p>
+      </div>
+      <div class="service-section">
+        <h4><span class="material-symbols-outlined">tune</span> Характеристики</h4>
+        <div class="characteristics-grid" id="modalCharacteristics"></div>
+      </div>
+      <div class="service-section">
+        <h4><span class="material-symbols-outlined">photo_library</span> Фото работ</h4>
+        <div class="photos-grid" id="modalPhotos"></div>
+      </div>
+      <div class="service-section">
+        <h4><span class="material-symbols-outlined">person</span> Исполнитель</h4>
+        <div class="worker-card">
+          <div class="worker-photo" id="modalWorkerAvatar"></div>
+          <div class="worker-details">
+            <h5 id="modalWorkerName"></h5>
+            <p id="modalWorkerRole"></p>
+            <div class="worker-rating">
+              <span class="material-symbols-outlined" style="color: #f59e0b;">star</span>
+              <span id="modalWorkerRating"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="service-section reviews-section">
+        <h4><span class="material-symbols-outlined">reviews</span> Последние отзывы</h4>
+        <div id="modalReviews"></div>
+        <div id="showAllReviews" class="show-all-reviews">
+          <a onclick="showAllReviews()">Показать все отзывы →</a>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="contactWorker()">Написать</button>
+        <button class="btn btn-success" onclick="orderService()">Заказать услугу</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Contact Modal -->
 <div id="contactModal" class="modal">
-    <div class="modal-content" style="max-width: 400px;">
-        <div class="modal-header">
-            <h2>Связаться с исполнителем</h2>
-            <button class="modal-close" onclick="closeContactModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <div style="text-align: center; margin-bottom: 24px;">
-                <div style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;" id="contactWorkerName"></div>
-                <div style="font-size: 14px; color: #64748b;" id="contactWorkerRole"></div>
-            </div>
-            
-            <a id="contactTelegram" href="#" target="_blank" class="contact-option telegram" style="display: none;">
-                <div class="contact-icon telegram"><i class="fab fa-telegram"></i></div>
-                <div class="contact-info">
-                    <div>Telegram</div>
-                    <div id="telegramValue"></div>
-                </div>
-            </a>
-            
-            <a id="contactMax" href="#" target="_blank" class="contact-option max" style="display: none;">
-                <div class="contact-icon max">MAX</div>
-                <div class="contact-info">
-                    <div>MAX</div>
-                    <div id="maxValue"></div>
-                </div>
-            </a>
-            
-            <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 16px;">
-                Выберите удобный способ связи
-            </p>
-        </div>
+  <div class="modal-content" style="max-width: 400px;">
+    <div class="modal-header">
+      <h2>Связаться с исполнителем</h2>
+      <button class="modal-close" onclick="closeContactModal()">×</button>
     </div>
+    <div class="modal-body">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;" id="contactWorkerName"></div>
+        <div style="font-size: 14px; color: #64748b;" id="contactWorkerRole"></div>
+      </div>
+      <a id="contactTelegram" href="#" target="_blank" class="contact-option telegram" style="display: none;">
+        <div class="contact-icon telegram"><i class="fab fa-telegram"></i></div>
+        <div class="contact-info">
+          <div>Telegram</div>
+          <div id="telegramValue"></div>
+        </div>
+      </a>
+      <a id="contactMax" href="#" target="_blank" class="contact-option max" style="display: none;">
+        <div class="contact-icon max">MAX</div>
+        <div class="contact-info">
+          <div>MAX</div>
+          <div id="maxValue"></div>
+        </div>
+      </a>
+      <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 16px;">
+        Выберите удобный способ связи
+      </p>
+    </div>
+  </div>
 </div>
 
 <!-- Login Modal -->
 <div id="loginModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Вход в систему</h2>
-            <button class="modal-close" onclick="closeLoginModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Войти</button>
-            </form>
-            <p class="modal-hint" style="margin-top: 1rem; text-align: center;">
-                Нет аккаунта? <a href="#" onclick="closeLoginModal(); openRegisterModal();" style="color: #135bec;">Зарегистрироваться</a>
-            </p>
-        </div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Вход в систему</h2>
+      <button class="modal-close" onclick="closeLoginModal()">×</button>
     </div>
+    <div class="modal-body">
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label>Пароль</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+      </form>
+      <p style="text-align: center; margin-top: 16px; color: #64748b;">
+        Нет аккаунта? <a href="#" onclick="switchToRegister(); return false;" style="color: #135bec;">Зарегистрироваться</a>
+      </p>
+    </div>
+  </div>
 </div>
 
-<script src="script.js"></script>
+<!-- Register Modal (УПРОЩЁННАЯ) -->
+<div id="registerModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Регистрация</h2>
+      <button class="modal-close" onclick="closeRegisterModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="registerForm" onsubmit="handleRegister(event)">
+        <!-- Выбор роли -->
+        <div class="form-group">
+          <label>Я хочу зарегистрироваться как:</label>
+          <div class="role-selector">
+            <label class="role-option selected" onclick="selectRole('customer', this)">
+              <input type="radio" name="userRole" value="customer" checked>
+              <span class="role-title">👤 Заказчик</span>
+              <span class="role-desc">Искать услуги</span>
+            </label>
+            <label class="role-option" onclick="selectRole('worker', this)">
+              <input type="radio" name="userRole" value="worker">
+              <span class="role-title">🔨 Исполнитель</span>
+              <span class="role-desc">Предлагать услуги</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Только базовые поля -->
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="registerEmail" required placeholder="your@email.com">
+          <div id="emailError" class="form-error">Неверный формат email</div>
+        </div>
+        <div class="form-group">
+          <label>Имя</label>
+          <input type="text" id="registerName" required placeholder="Ваше имя">
+        </div>
+        <div class="form-group">
+          <label>Пароль</label>
+          <input type="password" id="registerPassword" required placeholder="••••••••" minlength="6">
+          <div id="passwordError" class="form-error">Минимум 6 символов</div>
+        </div>
+        <div class="form-group">
+          <label>Подтвердите пароль</label>
+          <input type="password" id="registerConfirmPassword" required placeholder="••••••••">
+          <div id="confirmError" class="form-error">Пароли не совпадают</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;" id="registerBtn">
+          Зарегистрироваться
+        </button>
+      </form>
+      <p style="text-align: center; margin-top: 16px; color: #64748b;">
+        Уже есть аккаунт? <a href="#" onclick="switchToLogin(); return false;" style="color: #135bec;">Войти</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
 <script>
+// ===== ДАННЫЕ УСЛУГ (заглушка, потом загрузка из API) =====
 const services = [
-    { id: 1, title: "Строительство стен и перегородок", description: "Профессиональное возведение стен из кирпича, газоблока и других материалов.", fullDescription: "Мы предлагаем полный комплекс услуг по возведению стен и перегородок любой сложности.", price: 2500, category: "construction", worker: "Максим Светиков", workerRole: "Руководитель участка", rating: 4.9, reviewsCount: 127, icon: "🏗️", telegram: "@maksim_stroitel", max: "+79991234567", characteristics: { "Опыт работы": "10 лет", "Гарантия": "2 года", "Срок выполнения": "от 3 дней", "Выезд": "Бесплатно" }, photos: ["🏗️", "🧱", "🔨"], reviews: [{ author: "Анна К.", date: "15 февраля 2026", text: "Отличная работа!" }, { author: "Сергей М.", date: "10 февраля 2026", text: "Профессиональный подход." }] },
-    { id: 2, title: "Электромонтажные работы", description: "Полная замена проводки, установка розеток, выключателей.", fullDescription: "Выполняем электромонтажные работы любой сложности.", price: 1500, category: "electrical", worker: "Алекс Петров", workerRole: "Электрик", rating: 4.8, reviewsCount: 93, icon: "⚡", telegram: "@alex_electric", max: "+79992345678", characteristics: { "Опыт работы": "10 лет", "Гарантия": "1 год", "Срок выполнения": "1-5 дней", "Выезд": "Бесплатно" }, photos: ["⚡", "💡"], reviews: [{ author: "Дмитрий В.", date: "18 февраля 2026", text: "Быстро и качественно!" }] },
-    { id: 3, title: "Сантехнические услуги", description: "Установка сантехники, устранение засоров, ремонт труб.", fullDescription: "Предоставляем полный спектр сантехнических услуг.", price: 1200, category: "plumbing", worker: "Иван Дудаев", workerRole: "Сантехник", rating: 4.7, reviewsCount: 156, icon: "🔧", telegram: "@ivan_plumber", max: "+79993456789", characteristics: { "Опыт работы": "8 лет", "Гарантия": "6 месяцев", "Срок выполнения": "в день обращения", "Выезд": "Бесплатно" }, photos: ["🔧", "🚿", "🚽"], reviews: [{ author: "Олег Н.", date: "20 февраля 2026", text: "Приехал через час!" }] },
-    { id: 4, title: "Ремонт квартир под ключ", description: "Комплексный ремонт любой сложности.", fullDescription: "Выполняем ремонт квартир под ключ любой сложности.", price: 5000, category: "repair", worker: "Арсений Алхимов", workerRole: "Прораб", rating: 4.9, reviewsCount: 214, icon: "🏠", telegram: "@arseniy_repair", max: "+79994567890", characteristics: { "Опыт работы": "15 лет", "Гарантия": "3 года", "Срок выполнения": "от 1 месяца", "Дизайн-проект": "Бесплатно" }, photos: ["🏠"], reviews: [{ author: "Александр Р.", date: "22 февраля 2026", text: "Все в срок!" }] },
-    { id: 5, title: "Укладка плитки", description: "Профессиональная укладка плитки.", fullDescription: "Укладываем плитку любой сложности.", price: 1800, category: "repair", worker: "Азамат Дудаев", workerRole: "Плиточник", rating: 4.8, reviewsCount: 89, icon: "🔲", telegram: "@azamat_tiles", max: "+79995678901", characteristics: { "Опыт работы": "12 лет", "Гарантия": "2 года", "Срок выполнения": "3-7 дней", "Материалы": "Любые" }, photos: ["🔲", "🛁"], reviews: [{ author: "Виктор П.", date: "19 февраля 2026", text: "Идеально!" }] },
-    { id: 6, title: "Монтаж натяжных потолков", description: "Быстрая установка натяжных потолков.", fullDescription: "Устанавливаем натяжные потолки любой сложности.", price: 800, category: "repair", worker: "Антон Спартак", workerRole: "Монтажник", rating: 4.6, reviewsCount: 178, icon: "🎪", telegram: "@anton_ceiling", max: "+79996789012", characteristics: { "Опыт работы": "7 лет", "Гарантия": "10 лет", "Срок выполнения": "1 день", "Замер": "Бесплатно" }, photos: ["🎪", "💡"], reviews: [{ author: "Светлана Д.", date: "21 февраля 2026", text: "Очень быстро!" }] }
+  { id: 1, title: "Строительство стен и перегородок", description: "Профессиональное возведение стен из кирпича, газоблока и других материалов.", fullDescription: "Мы предлагаем полный комплекс услуг по возведению стен и перегородок любой сложности.", price: 2500, category: "construction", worker: "Максим Светиков", workerRole: "Руководитель участка", rating: 4.9, reviewsCount: 127, icon: "🏗️", telegram: "@maksim_stroitel", max: "+79991234567", characteristics: { "Опыт работы": "10 лет", "Гарантия": "2 года", "Срок выполнения": "от 3 дней", "Выезд": "Бесплатно" }, photos: ["🏗️", "🧱", "🔨"], reviews: [{ author: "Анна К.", date: "15 февраля 2026", text: "Отличная работа!" }, { author: "Сергей М.", date: "10 февраля 2026", text: "Профессиональный подход." }] },
+  { id: 2, title: "Электромонтажные работы", description: "Полная замена проводки, установка розеток, выключателей.", fullDescription: "Выполняем электромонтажные работы любой сложности.", price: 1500, category: "electrical", worker: "Алекс Петров", workerRole: "Электрик", rating: 4.8, reviewsCount: 93, icon: "⚡", telegram: "@alex_electric", max: "+79992345678", characteristics: { "Опыт работы": "10 лет", "Гарантия": "1 год", "Срок выполнения": "1-5 дней", "Выезд": "Бесплатно" }, photos: ["⚡", "💡"], reviews: [{ author: "Дмитрий В.", date: "18 февраля 2026", text: "Быстро и качественно!" }] },
+  { id: 3, title: "Сантехнические услуги", description: "Установка сантехники, устранение засоров, ремонт труб.", fullDescription: "Предоставляем полный спектр сантехнических услуг.", price: 1200, category: "plumbing", worker: "Иван Дудаев", workerRole: "Сантехник", rating: 4.7, reviewsCount: 156, icon: "🔧", telegram: "@ivan_plumber", max: "+79993456789", characteristics: { "Опыт работы": "8 лет", "Гарантия": "6 месяцев", "Срок выполнения": "в день обращения", "Выезд": "Бесплатно" }, photos: ["🔧", "🚿", "🚽"], reviews: [{ author: "Олег Н.", date: "20 февраля 2026", text: "Приехал через час!" }] },
+  { id: 4, title: "Ремонт квартир под ключ", description: "Комплексный ремонт любой сложности.", fullDescription: "Выполняем ремонт квартир под ключ любой сложности.", price: 5000, category: "repair", worker: "Арсений Алхимов", workerRole: "Прораб", rating: 4.9, reviewsCount: 214, icon: "🏠", telegram: "@arseniy_repair", max: "+79994567890", characteristics: { "Опыт работы": "15 лет", "Гарантия": "3 года", "Срок выполнения": "от 1 месяца", "Дизайн-проект": "Бесплатно" }, photos: ["🏠"], reviews: [{ author: "Александр Р.", date: "22 февраля 2026", text: "Все в срок!" }] },
+  { id: 5, title: "Укладка плитки", description: "Профессиональная укладка плитки.", fullDescription: "Укладываем плитку любой сложности.", price: 1800, category: "repair", worker: "Азамат Дудаев", workerRole: "Плиточник", rating: 4.8, reviewsCount: 89, icon: "🔲", telegram: "@azamat_tiles", max: "+79995678901", characteristics: { "Опыт работы": "12 лет", "Гарантия": "2 года", "Срок выполнения": "3-7 дней", "Материалы": "Любые" }, photos: ["🔲", "🛁"], reviews: [{ author: "Виктор П.", date: "19 февраля 2026", text: "Идеально!" }] },
+  { id: 6, title: "Монтаж натяжных потолков", description: "Быстрая установка натяжных потолков.", fullDescription: "Устанавливаем натяжные потолки любой сложности.", price: 800, category: "repair", worker: "Антон Спартак", workerRole: "Монтажник", rating: 4.6, reviewsCount: 178, icon: "🎪", telegram: "@anton_ceiling", max: "+79996789012", characteristics: { "Опыт работы": "7 лет", "Гарантия": "10 лет", "Срок выполнения": "1 день", "Замер": "Бесплатно" }, photos: ["🎪", "💡"], reviews: [{ author: "Светлана Д.", date: "21 февраля 2026", text: "Очень быстро!" }] }
 ];
 let currentService = null;
 
+// ===== ИНИЦИАЛИЗАЦИЯ =====
 document.addEventListener('DOMContentLoaded', function() {
-    checkAuth();
-    renderServices(services);
+  checkAuth();
+  renderServices(services);
 });
 
+// ===== АВТОРИЗАЦИЯ =====
 function checkAuth() {
-    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
-    const role = localStorage.getItem('userRole') || localStorage.getItem('role');
-    const userName = localStorage.getItem('userName');
-    const authButtons = document.getElementById('authButtons');
-    const userMenu = document.getElementById('userMenu');
-    const nameElement = document.getElementById('userName');
-    const dashboardLink = document.getElementById('dashboardLink');
-    
-    if (token && userName) {
-        if (authButtons) authButtons.style.display = 'none';
-        if (userMenu) {
-            userMenu.style.display = 'flex';
-            if (nameElement) nameElement.textContent = userName;
-        }
-        if (dashboardLink) {
-            if (role === 'admin') {
-                dashboardLink.textContent = '🏗️ Панель администратора';
-                dashboardLink.href = '/admin.html';
-            } else {
-                dashboardLink.textContent = '📋 Мои заказы';
-                dashboardLink.href = '/customer.html';
-            }
-        }
-    } else {
-        if (authButtons) authButtons.style.display = 'flex';
-        if (userMenu) userMenu.style.display = 'none';
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+  const role = localStorage.getItem('userRole') || localStorage.getItem('role');
+  const userName = localStorage.getItem('userName');
+  const authButtons = document.getElementById('authButtons');
+  const userMenu = document.getElementById('userMenu');
+  const nameElement = document.getElementById('userName');
+  const dashboardLink = document.getElementById('dashboardLink');
+
+  if (token && userName) {
+    if (authButtons) authButtons.style.display = 'none';
+    if (userMenu) {
+      userMenu.style.display = 'flex';
+      if (nameElement) nameElement.textContent = userName;
     }
+    if (dashboardLink) {
+      if (role === 'admin') {
+        dashboardLink.textContent = '🏗️ Панель администратора';
+        dashboardLink.href = '/admin.html';
+      } else if (role === 'worker') {
+        dashboardLink.textContent = '💼 Мой кабинет исполнителя';
+        dashboardLink.href = '/worker-dashboard.html'; // 🔹 Страница для исполнителя
+      } else {
+        dashboardLink.textContent = '📋 Мои заказы';
+        dashboardLink.href = '/customer.html';
+      }
+    }
+  } else {
+    if (authButtons) authButtons.style.display = 'flex';
+    if (userMenu) userMenu.style.display = 'none';
+  }
 }
 
 function toggleUserDropdown() {
-    const dropdown = document.getElementById('userDropdown');
-    const arrow = document.querySelector('.dropdown-arrow');
-    if (dropdown && arrow) {
-        dropdown.classList.toggle('active');
-        arrow.classList.toggle('active');
-    }
+  const dropdown = document.getElementById('userDropdown');
+  const arrow = document.querySelector('.dropdown-arrow');
+  if (dropdown && arrow) {
+    dropdown.classList.toggle('active');
+    arrow.classList.toggle('active');
+  }
 }
 
 document.addEventListener('click', function(e) {
-    const userMenu = document.getElementById('userMenu');
-    const dropdown = document.getElementById('userDropdown');
-    const arrow = document.querySelector('.dropdown-arrow');
-    if (userMenu && !userMenu.contains(e.target)) {
-        if (dropdown) dropdown.classList.remove('active');
-        if (arrow) arrow.classList.remove('active');
-    }
+  const userMenu = document.getElementById('userMenu');
+  const dropdown = document.getElementById('userDropdown');
+  const arrow = document.querySelector('.dropdown-arrow');
+  if (userMenu && !userMenu.contains(e.target)) {
+    if (dropdown) dropdown.classList.remove('active');
+    if (arrow) arrow.classList.remove('active');
+  }
 });
 
-function openLoginModal() {
-    document.getElementById('loginModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
+function logout() {
+  localStorage.clear();
+  window.location.href = "/auto.html";
 }
 
-function closeLoginModal() {
-    document.getElementById('loginModal').classList.remove('active');
-    document.body.style.overflow = '';
+// ===== МОДАЛЬНЫЕ ОКНА =====
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('active');
+  document.body.style.overflow = 'hidden';
 }
 
-function openRegisterModal() {
-    alert('🔜 Страница регистрации в разработке!');
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('active');
+  document.body.style.overflow = '';
+  document.querySelectorAll('.form-error').forEach(el => el.classList.remove('active'));
 }
 
-function closeServiceModal() {
-    document.getElementById('serviceModal').classList.remove('active');
-    document.body.style.overflow = '';
+function openLoginModal() { openModal('loginModal'); }
+function closeLoginModal() { closeModal('loginModal'); }
+function openRegisterModal() { openModal('registerModal'); }
+function closeRegisterModal() { closeModal('registerModal'); }
+function closeServiceModal() { closeModal('serviceModal'); }
+function closeContactModal() { closeModal('contactModal'); }
+
+// Переключение между модальными окнами
+function switchToRegister() {
+  closeLoginModal();
+  setTimeout(() => openRegisterModal(), 200);
+}
+function switchToLogin() {
+  closeRegisterModal();
+  setTimeout(() => openLoginModal(), 200);
 }
 
-function closeContactModal() {
-    document.getElementById('contactModal').classList.remove('active');
-    document.body.style.overflow = '';
+// ===== ВЫБОР РОЛИ ПРИ РЕГИСТРАЦИИ =====
+function selectRole(role, element) {
+  document.querySelectorAll('.role-option').forEach(el => el.classList.remove('selected'));
+  element.classList.add('selected');
+  document.querySelector(`input[name="userRole"][value="${role}"]`).checked = true;
+  // 🔹 Убрано: workerFields больше не показываются
 }
 
-async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    
-    submitBtn.textContent = '⏳ Вход...';
-    submitBtn.disabled = true;
-    
-    try {
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
-        
-        if (data.success) {
-            localStorage.setItem('accessToken', data.accessToken);
-            localStorage.setItem('token', data.accessToken);
-            localStorage.setItem('userRole', data.role);
-            localStorage.setItem('role', data.role);
-            
-            try {
-                const userInfoResponse = await fetch('/api/validate-token', {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + data.accessToken }
-                });
-                const userInfo = await userInfoResponse.json();
-                if (userInfo.valid && userInfo.name) {
-                    localStorage.setItem('userName', userInfo.name);
-                } else {
-                    localStorage.setItem('userName', email.split('@')[0]);
-                }
-            } catch (e) {
-                localStorage.setItem('userName', email.split('@')[0]);
-            }
-            
-            closeLoginModal();
-            checkAuth();
-            
-            setTimeout(() => {
-                if (data.role === 'admin') {
-                    window.location.href = '/admin.html';
-                } else if (data.role === 'customer') {
-                    window.location.href = '/customer.html';
-                } else {
-                    window.location.reload();
-                }
-            }, 100);
-        } else {
-            alert('❌ ' + data.message);
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
-    } catch (error) {
-        console.error('❌ Ошибка входа:', error);
-        alert('❌ Ошибка подключения к серверу');
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-}
+// ===== РЕГИСТРАЦИЯ (УПРОЩЁННАЯ) =====
+async function handleRegister(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('registerEmail').value.trim();
+  const name = document.getElementById('registerName').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirmPassword = document.getElementById('registerConfirmPassword').value;
+  const role = document.querySelector('input[name="userRole"]:checked').value;
+  const submitBtn = document.getElementById('registerBtn');
+  const originalText = submitBtn.textContent;
 
-function renderServices(servicesToRender) {
-    const grid = document.getElementById('servicesGrid');
-    grid.innerHTML = servicesToRender.map(service => `
-        <div class="service-card" onclick="openServiceModal(${service.id})">
-            <div class="service-image">${service.icon}</div>
-            <div class="service-info">
-                <div class="service-price">${service.price} ₽/час</div>
-                <div class="service-title">${service.title}</div>
-                <div class="service-description">${service.description}</div>
-                <div class="service-meta">
-                    <div class="worker-info">
-                        <div class="worker-avatar">${service.worker.charAt(0)}</div>
-                        <span class="worker-name">${service.worker}</span>
-                    </div>
-                    <div class="service-rating">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">star</span>
-                        ${service.rating}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
+  document.querySelectorAll('.form-error').forEach(el => el.classList.remove('active'));
 
-function openServiceModal(id) {
-    const service = services.find(s => s.id === id);
-    if (!service) return;
-    currentService = service;
+  let hasError = false;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('emailError').classList.add('active');
+    hasError = true;
+  }
+  if (password.length < 6) {
+    document.getElementById('passwordError').classList.add('active');
+    hasError = true;
+  }
+  if (password !== confirmPassword) {
+    document.getElementById('confirmError').classList.add('active');
+    hasError = true;
+  }
+  if (hasError) return;
+
+  // 🔹 Только базовые данные — без worker_profile!
+  const registerData = { email, password, name, role };
+
+  submitBtn.textContent = '⏳ Регистрация...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registerData)
+    });
     
-    document.getElementById('modalIcon').textContent = service.icon;
-    document.getElementById('modalTitle').textContent = service.title;
-    document.getElementById('modalPrice').textContent = `${service.price} ₽/час`;
-    document.getElementById('modalDescription').textContent = service.fullDescription;
-    
-    const charsHtml = Object.entries(service.characteristics).map(([label, value]) => `
-        <div class="characteristic-item">
-            <span class="characteristic-label">${label}</span>
-            <span class="characteristic-value">${value}</span>
-        </div>
-    `).join('');
-    document.getElementById('modalCharacteristics').innerHTML = charsHtml;
-    
-    const photosHtml = service.photos.map(photo => `<div class="photo-item">${photo}</div>`).join('');
-    document.getElementById('modalPhotos').innerHTML = photosHtml;
-    
-    const initials = service.worker.split(' ').map(n => n[0]).join('');
-    document.getElementById('modalWorkerAvatar').textContent = initials;
-    document.getElementById('modalWorkerName').textContent = service.worker;
-    document.getElementById('modalWorkerRole').textContent = service.workerRole;
-    document.getElementById('modalWorkerRating').textContent = service.rating;
-    
-    // 🔹 ПОСЛЕДНИЕ 3 ОТЗЫВА
-    const maxReviews = 3;
-    const recentReviews = service.reviews.slice(0, maxReviews);
-    const reviewsHtml = recentReviews.map(review => `
-        <div class="review-item">
-            <div class="review-header">
-                <span class="review-author">${review.author}</span>
-                <span class="review-date">${review.date}</span>
-            </div>
-            <div class="review-text">${review.text}</div>
-        </div>
-    `).join('');
-    document.getElementById('modalReviews').innerHTML = reviewsHtml;
-    
-    const showAllLink = document.getElementById('showAllReviews');
-    if (service.reviews.length > maxReviews) {
-        showAllLink.style.display = 'block';
+    const data = await response.json();
+
+    if (response.ok) {
+      alert(`✅ ${data.message || 'Регистрация успешна!'}\nТеперь вы можете войти.`);
+      closeRegisterModal();
+      document.getElementById('registerForm').reset();
+      selectRole('customer', document.querySelector('.role-option:first-child'));
+      switchToLogin();
+      document.getElementById('loginEmail').value = email;
     } else {
-        showAllLink.style.display = 'none';
+      alert(`❌ ${data.error || 'Ошибка регистрации'}`);
     }
-    
-    document.getElementById('serviceModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
+  } catch (error) {
+    console.error('Ошибка регистрации:', error);
+    alert('❌ Ошибка подключения к серверу');
+  } finally {
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+}
+
+// ===== ВХОД =====
+async function handleLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+
+  submitBtn.textContent = '⏳ Вход...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem('userRole', data.role);
+      localStorage.setItem('role', data.role);
+
+      try {
+        const userInfoResponse = await fetch('/api/validate-token', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + data.accessToken }
+        });
+        const userInfo = await userInfoResponse.json();
+        if (userInfo.valid && userInfo.name) {
+          localStorage.setItem('userName', userInfo.name);
+        } else {
+          localStorage.setItem('userName', email.split('@')[0]);
+        }
+      } catch (e) {
+        localStorage.setItem('userName', email.split('@')[0]);
+      }
+
+      closeLoginModal();
+      checkAuth();
+
+      setTimeout(() => {
+        if (data.role === 'admin') {
+          window.location.href = '/admin.html';
+        } else if (data.role === 'customer') {
+          window.location.href = '/customer.html';
+        } else if (data.role === 'worker') {
+          window.location.href = '/worker-dashboard.html'; // 🔹 Страница исполнителя
+        } else {
+          window.location.reload();
+        }
+      }, 100);
+    } else {
+      alert('❌ ' + data.message);
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  } catch (error) {
+    console.error('Ошибка входа:', error);
+    alert('❌ Ошибка подключения к серверу');
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+}
+
+// ===== ОТОБРАЖЕНИЕ УСЛУГ =====
+function renderServices(servicesToRender) {
+  const grid = document.getElementById('servicesGrid');
+  grid.innerHTML = servicesToRender.map(service => `
+    <div class="service-card" onclick="openServiceModal(${service.id})">
+      <div class="service-image">${service.icon}</div>
+      <div class="service-info">
+        <div class="service-price">${service.price} ₽/час</div>
+        <div class="service-title">${service.title}</div>
+        <div class="service-description">${service.description}</div>
+        <div class="service-meta">
+          <div class="worker-info">
+            <div class="worker-avatar">${service.worker.charAt(0)}</div>
+            <span class="worker-name">${service.worker}</span>
+          </div>
+          <div class="service-rating">
+            <span class="material-symbols-outlined" style="font-size: 18px;">star</span>
+            ${service.rating}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== МОДАЛЬНОЕ ОКНО УСЛУГИ =====
+function openServiceModal(id) {
+  const service = services.find(s => s.id === id);
+  if (!service) return;
+  currentService = service;
+  
+  document.getElementById('modalIcon').textContent = service.icon;
+  document.getElementById('modalTitle').textContent = service.title;
+  document.getElementById('modalPrice').textContent = `${service.price} ₽/час`;
+  document.getElementById('modalDescription').textContent = service.fullDescription;
+  
+  const charsHtml = Object.entries(service.characteristics).map(([label, value]) => `
+    <div class="characteristic-item">
+      <span class="characteristic-label">${label}</span>
+      <span class="characteristic-value">${value}</span>
+    </div>
+  `).join('');
+  document.getElementById('modalCharacteristics').innerHTML = charsHtml;
+  
+  const photosHtml = service.photos.map(photo => `<div class="photo-item">${photo}</div>`).join('');
+  document.getElementById('modalPhotos').innerHTML = photosHtml;
+  
+  const initials = service.worker.split(' ').map(n => n[0]).join('');
+  document.getElementById('modalWorkerAvatar').textContent = initials;
+  document.getElementById('modalWorkerName').textContent = service.worker;
+  document.getElementById('modalWorkerRole').textContent = service.workerRole;
+  document.getElementById('modalWorkerRating').textContent = service.rating;
+  
+  const maxReviews = 3;
+  const recentReviews = service.reviews.slice(0, maxReviews);
+  const reviewsHtml = recentReviews.map(review => `
+    <div class="review-item">
+      <div class="review-header">
+        <span class="review-author">${review.author}</span>
+        <span class="review-date">${review.date}</span>
+      </div>
+      <div class="review-text">${review.text}</div>
+    </div>
+  `).join('');
+  document.getElementById('modalReviews').innerHTML = reviewsHtml;
+  
+  const showAllLink = document.getElementById('showAllReviews');
+  if (service.reviews.length > maxReviews) {
+    showAllLink.style.display = 'block';
+  } else {
+    showAllLink.style.display = 'none';
+  }
+  
+  openModal('serviceModal');
 }
 
 function showAllReviews() {
-    if (!currentService) return;
-    const allReviewsHtml = currentService.reviews.map(review => `
-        <div class="review-item">
-            <div class="review-header">
-                <span class="review-author">${review.author}</span>
-                <span class="review-date">${review.date}</span>
-            </div>
-            <div class="review-text">${review.text}</div>
-        </div>
-    `).join('');
-    document.getElementById('modalReviews').innerHTML = allReviewsHtml;
-    document.getElementById('showAllReviews').style.display = 'none';
+  if (!currentService) return;
+  const allReviewsHtml = currentService.reviews.map(review => `
+    <div class="review-item">
+      <div class="review-header">
+        <span class="review-author">${review.author}</span>
+        <span class="review-date">${review.date}</span>
+      </div>
+      <div class="review-text">${review.text}</div>
+    </div>
+  `).join('');
+  document.getElementById('modalReviews').innerHTML = allReviewsHtml;
+  document.getElementById('showAllReviews').style.display = 'none';
 }
 
-// 🔹 КОНТАКТЫ ИСПОЛНИТЕЛЯ
-function contactWorker() { 
-    if (!currentService) return;
-    
-    if (!currentService.telegram && !currentService.max) {
-        alert(`Напишите ${currentService.worker} через форму заказа`);
-        return;
-    }
-    
-    // Заполняем данные
-    document.getElementById('contactWorkerName').textContent = currentService.worker;
-    document.getElementById('contactWorkerRole').textContent = currentService.workerRole;
-    
-    // Telegram
-    const telegramLink = document.getElementById('contactTelegram');
-    const telegramValue = document.getElementById('telegramValue');
-    if (currentService.telegram) {
-        telegramValue.textContent = currentService.telegram;
-        const tgUsername = currentService.telegram.replace('@', '');
-        telegramLink.href = `https://t.me/${tgUsername}`;
-        telegramLink.style.display = 'flex';
-    } else {
-        telegramLink.style.display = 'none';
-    }
-    
-    // MAX
-    const maxLink = document.getElementById('contactMax');
-    const maxValue = document.getElementById('maxValue');
-    if (currentService.max) {
-        maxValue.textContent = currentService.max;
-        const maxPhone = currentService.max.replace(/\D/g, '');
-        maxLink.href = `https://max.ru/${maxPhone}`;
-        maxLink.style.display = 'flex';
-    } else {
-        maxLink.style.display = 'none';
-    }
-    
-    // Открываем модальное окно
-    document.getElementById('contactModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
+// ===== КОНТАКТЫ ИСПОЛНИТЕЛЯ =====
+function contactWorker() {
+  if (!currentService) return;
+  if (!currentService.telegram && !currentService.max) {
+    alert(`Напишите ${currentService.worker} через форму заказа`);
+    return;
+  }
+  
+  document.getElementById('contactWorkerName').textContent = currentService.worker;
+  document.getElementById('contactWorkerRole').textContent = currentService.workerRole;
+  
+  const telegramLink = document.getElementById('contactTelegram');
+  const telegramValue = document.getElementById('telegramValue');
+  if (currentService.telegram) {
+    telegramValue.textContent = currentService.telegram;
+    const tgUsername = currentService.telegram.replace('@', '');
+    telegramLink.href = `https://t.me/${tgUsername}`;
+    telegramLink.style.display = 'flex';
+  } else {
+    telegramLink.style.display = 'none';
+  }
+  
+  const maxLink = document.getElementById('contactMax');
+  const maxValue = document.getElementById('maxValue');
+  if (currentService.max) {
+    maxValue.textContent = currentService.max;
+    const maxPhone = currentService.max.replace(/\D/g, '');
+    maxLink.href = `https://max.ru/${maxPhone}`;
+    maxLink.style.display = 'flex';
+  } else {
+    maxLink.style.display = 'none';
+  }
+  
+  openModal('contactModal');
 }
 
+// ===== ФИЛЬТРЫ И ПОИСК =====
 function filterServices() {
-    const category = document.getElementById('categoryFilter').value;
-    const maxPrice = document.getElementById('priceFilter').value;
-    let filtered = services;
-    if (category) filtered = filtered.filter(s => s.category === category);
-    if (maxPrice) filtered = filtered.filter(s => s.price <= parseInt(maxPrice));
-    renderServices(filtered);
+  const category = document.getElementById('categoryFilter').value;
+  const maxPrice = document.getElementById('priceFilter').value;
+  let filtered = services;
+  if (category) filtered = filtered.filter(s => s.category === category);
+  if (maxPrice) filtered = filtered.filter(s => s.price <= parseInt(maxPrice));
+  renderServices(filtered);
 }
 
 function searchServices() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = services.filter(s => s.title.toLowerCase().includes(query) || s.description.toLowerCase().includes(query));
-    renderServices(filtered);
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = services.filter(s => 
+    s.title.toLowerCase().includes(query) || 
+    s.description.toLowerCase().includes(query)
+  );
+  renderServices(filtered);
 }
 
+// ===== ЗАКАЗ УСЛУГИ =====
 function orderService() {
-    if (currentService) {
-        const token = localStorage.getItem('accessToken');
-        const role = localStorage.getItem('userRole');
-        if (!token) {
-            alert('Для заказа услуги необходимо войти в систему!');
-            closeServiceModal();
-            openLoginModal();
-        } else if (role !== 'customer') {
-            alert('Только клиенты могут заказывать услуги!');
-        } else {
-            openOrderForm(currentService);
-        }
+  if (currentService) {
+    const token = localStorage.getItem('accessToken');
+    const role = localStorage.getItem('userRole');
+    if (!token) {
+      alert('Для заказа услуги необходимо войти в систему!');
+      closeServiceModal();
+      openLoginModal();
+    } else if (role !== 'customer') {
+      alert('Только клиенты могут заказывать услуги!');
+    } else {
+      openOrderForm(currentService);
     }
+  }
 }
 
 function openOrderForm(service) {
-    const formHtml = `
-        <div id="orderFormModal" class="modal active">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>📋 Оформление заказа</h2>
-                    <button class="modal-close" onclick="closeOrderForm()">×</button>
-                </div>
-                <div class="modal-body">
-                    <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                        <strong>${service.title}</strong><br>
-                        <span style="color: #135bec; font-size: 20px; font-weight: 700;">${service.price} ₽/час</span>
-                    </div>
-                    <form id="orderForm" onsubmit="submitOrder(event)">
-                        <div class="form-group"><label>Ваше имя</label><input type="text" id="orderName" required></div>
-                        <div class="form-group"><label>Телефон</label><input type="tel" id="orderPhone" required></div>
-                        <div class="form-group"><label>Адрес объекта</label><input type="text" id="orderAddress" required></div>
-                        <div class="form-group"><label>Комментарий</label><textarea id="orderDesc" rows="3"></textarea></div>
-                        <button type="submit" class="btn btn-primary">Отправить заявку</button>
-                    </form>
-                </div>
-            </div>
+  const formHtml = `
+    <div id="orderFormModal" class="modal active">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>📋 Оформление заказа</h2>
+          <button class="modal-close" onclick="closeOrderForm()">×</button>
         </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', formHtml);
+        <div class="modal-body">
+          <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+            <strong>${service.title}</strong><br>
+            <span style="color: #135bec; font-size: 20px; font-weight: 700;">${service.price} ₽/час</span>
+          </div>
+          <form id="orderForm" onsubmit="submitOrder(event)">
+            <div class="form-group"><label>Ваше имя</label><input type="text" id="orderName" required></div>
+            <div class="form-group"><label>Телефон</label><input type="tel" id="orderPhone" required></div>
+            <div class="form-group"><label>Адрес объекта</label><input type="text" id="orderAddress" required></div>
+            <div class="form-group"><label>Комментарий</label><textarea id="orderDesc" rows="3"></textarea></div>
+            <button type="submit" class="btn btn-primary">Отправить заявку</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', formHtml);
 }
 
-function closeOrderForm() { const modal = document.getElementById('orderFormModal'); if (modal) modal.remove(); }
+function closeOrderForm() {
+  const modal = document.getElementById('orderFormModal');
+  if (modal) modal.remove();
+}
 
 async function submitOrder(event) {
-    event.preventDefault();
-    const token = localStorage.getItem('accessToken');
-    const orderData = {
-        service_title: currentService.title,
-        service_description: document.getElementById('orderDesc').value,
-        price: currentService.price,
-        customer_name: document.getElementById('orderName').value,
-        customer_phone: document.getElementById('orderPhone').value,
-        customer_address: document.getElementById('orderAddress').value
-    };
-    try {
-        const response = await fetch('/api/create-order', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-        });
-        const data = await response.json();
-        if (data.success) {
-            alert('✅ Заявка отправлена!');
-            closeOrderForm();
-            closeServiceModal();
-            window.location.href = '/customer.html';
-        } else {
-            alert('❌ ' + data.message);
-        }
-    } catch (error) {
-        alert('❌ Ошибка отправки заявки');
+  event.preventDefault();
+  const token = localStorage.getItem('accessToken');
+  const orderData = {
+    service_title: currentService.title,
+    service_description: document.getElementById('orderDesc').value,
+    price: currentService.price,
+    customer_name: document.getElementById('orderName').value,
+    customer_phone: document.getElementById('orderPhone').value,
+    customer_address: document.getElementById('orderAddress').value
+  };
+  
+  try {
+    const response = await fetch('/api/create-order', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+    const data = await response.json();
+    if (data.success) {
+      alert('✅ Заявка отправлена!');
+      closeOrderForm();
+      closeServiceModal();
+      window.location.href = '/customer.html';
+    } else {
+      alert('❌ ' + data.message);
     }
+  } catch (error) {
+    alert('❌ Ошибка отправки заявки');
+  }
 }
 
+// ===== ЗАКРЫТИЕ МОДАЛОК =====
 window.onclick = function(event) {
-    if (event.target === document.getElementById('serviceModal')) closeServiceModal();
-    if (event.target === document.getElementById('loginModal')) closeLoginModal();
-    if (event.target === document.getElementById('contactModal')) closeContactModal();
-}
+  ['serviceModal', 'loginModal', 'registerModal', 'contactModal'].forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal && event.target === modal) closeModal(id);
+  });
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    ['serviceModal', 'loginModal', 'registerModal', 'contactModal'].forEach(id => {
+      const modal = document.getElementById(id);
+      if (modal && modal.classList.contains('active')) closeModal(id);
+    });
+  }
+});
 </script>
 </body>
 </html>

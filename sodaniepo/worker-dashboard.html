@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кабинет исполнителя - Staff Tracking</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<link rel="stylesheet" href="styles.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Manrope', sans-serif; background: #f5f5f5; }
+.header { background: white; padding: 16px 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo .material-symbols-outlined { font-size: 36px; color: #135bec; }
+.logo h1 { font-size: 24px; color: #1e293b; font-weight: 700; }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a { text-decoration: none; color: #475569; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: #135bec; }
+.btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-family: 'Manrope', sans-serif; font-size: 14px; }
+.btn-outline { background: transparent; border: 2px solid #135bec; color: #135bec; }
+.btn-outline:hover { background: #135bec; color: white; }
+.btn-primary { background: #135bec; color: white; }
+.btn-primary:hover { background: #0d4bd6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(19, 91, 236, 0.3); }
+.btn-success { background: #10b981; color: white; }
+.btn-danger { background: #ef4444; color: white; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+.welcome-section { background: linear-gradient(135deg, #135bec 0%, #0d4bd6 100%); color: white; padding: 40px; border-radius: 16px; margin-bottom: 32px; }
+.welcome-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.welcome-subtitle { font-size: 16px; opacity: 0.9; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+.profile-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.profile-header { text-align: center; margin-bottom: 24px; }
+.profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: #135bec; color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 700; margin: 0 auto 16px; }
+.profile-name { font-size: 20px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+.profile-role { color: #64748b; font-size: 14px; }
+.profile-stats { margin-bottom: 24px; }
+.stat-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+.stat-item:last-child { border-bottom: none; }
+.stat-label { color: #64748b; font-size: 14px; }
+.stat-value { font-weight: 600; color: #1e293b; }
+.btn-edit-profile { width: 100%; margin-bottom: 8px; }
+.btn-logout { width: 100%; background: #ef4444; color: white; }
+.services-section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.section-title { font-size: 24px; font-weight: 700; color: #1e293b; }
+.btn-add-service { display: flex; align-items: center; gap: 8px; }
+.services-list { display: grid; gap: 16px; }
+.service-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; transition: all 0.2s; }
+.service-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.service-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+.service-title { font-size: 18px; font-weight: 600; color: #1e293b; }
+.service-price { font-size: 20px; font-weight: 700; color: #135bec; }
+.service-description { color: #64748b; font-size: 14px; margin-bottom: 12px; }
+.service-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.service-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #64748b; }
+.service-actions { display: flex; gap: 8px; margin-top: 16px; }
+.service-actions .btn { padding: 8px 16px; font-size: 13px; }
+.empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
+.empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+.empty-title { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+.empty-text { margin-bottom: 24px; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-content { background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #e2e8f0; }
+.modal-header h2 { margin: 0; font-size: 1.25rem; color: #1e293b; }
+.modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #64748b; line-height: 1; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+.modal-close:hover { background: #f1f5f9; color: #1e293b; }
+.modal-body { padding: 24px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 500; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Manrope', sans-serif; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #135bec; box-shadow: 0 0 0 3px rgba(19, 91, 236, 0.1); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <span class="material-symbols-outlined">engineering</span>
+    <h1>Staff Tracking</h1>
+  </div>
+  <nav class="nav-links">
+    <a href="/auto.html">🏠 На главную</a>
+    <a href="#services">Мои услуги</a>
+    <a href="#orders">Заказы</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="welcome-section">
+    <h1 class="welcome-title" id="welcomeTitle">Добро пожаловать!</h1>
+    <p class="welcome-subtitle">Управляйте своими услугами и заказами</p>
+  </div>
+  
+  <div class="dashboard-grid">
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">И</div>
+        <div class="profile-name" id="profileName">Загрузка...</div>
+        <div class="profile-role">Исполнитель</div>
+      </div>
+      
+      <div class="profile-stats">
+        <div class="stat-item">
+          <span class="stat-label">Услуг</span>
+          <span class="stat-value" id="statServices">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Заказов</span>
+          <span class="stat-value" id="statOrders">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Рейтинг</span>
+          <span class="stat-value" id="statRating">0.0</span>
+        </div>
+      </div>
+      
+      <button class="btn btn-outline btn-edit-profile" onclick="editProfile()">✏️ Редактировать профиль</button>
+      <button class="btn btn-danger btn-logout" onclick="logout()">🚪 Выйти</button>
+    </div>
+    
+    <!-- Services Section -->
+    <div class="services-section">
+      <div class="section-header">
+        <h2 class="section-title">📋 Мои услуги</h2>
+        <button class="btn btn-primary btn-add-service" onclick="openAddServiceModal()">
+          <span class="material-symbols-outlined">add</span>
+          Добавить услугу
+        </button>
+      </div>
+      
+      <div class="services-list" id="servicesList">
+        <div class="loading" style="text-align: center; padding: 40px; color: #64748b;">
+          Загрузка услуг...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Service Modal -->
+<div id="serviceModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Добавить услугу</h2>
+      <button class="modal-close" onclick="closeServiceModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="serviceForm" onsubmit="saveService(event)">
+        <input type="hidden" id="serviceId">
+        
+        <div class="form-group">
+          <label>Название услуги *</label>
+          <input type="text" id="serviceTitle" required placeholder="Например: Установка сантехники">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Цена (₽/час) *</label>
+            <input type="number" id="servicePrice" required min="0" placeholder="1500">
+          </div>
+          <div class="form-group">
+            <label>Категория *</label>
+            <select id="serviceCategory" required>
+              <option value="">Выберите категорию</option>
+              <option value="construction">Строительство</option>
+              <option value="repair">Ремонт</option>
+              <option value="electrical">Электрика</option>
+              <option value="plumbing">Сантехника</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Описание *</label>
+          <textarea id="serviceDescription" rows="3" required placeholder="Опишите вашу услугу..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Опыт работы (лет)</label>
+            <input type="number" id="serviceExperience" min="0" placeholder="5">
+          </div>
+          <div class="form-group">
+            <label>Гарантия (лет)</label>
+            <input type="number" id="serviceGuarantee" min="0" placeholder="1">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Срок выполнения</label>
+          <input type="text" id="serviceCompletionTime" placeholder="Например: от 3 дней">
+        </div>
+        
+        <div class="form-group">
+          <label>Telegram</label>
+          <input type="text" id="serviceTelegram" placeholder="@username">
+        </div>
+        
+        <div class="form-group">
+          <label>MAX</label>
+          <input type="text" id="serviceMax" placeholder="+7 (999) 123-45-67">
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Сохранить услугу</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let workerData = null;
+let services = [];
+let currentServiceId = null;
+
+// Проверка авторизации
+document.addEventListener('DOMContentLoaded', async function() {
+  await checkAuth();
+});
+
+async function checkAuth() {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  
+  if (!token || role !== 'worker') {
+    window.location.href = '/auto.html';
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/validate-token', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!data.valid) {
+      localStorage.clear();
+      window.location.href = '/auto.html';
+      return;
+    }
+    
+    workerData = data;
+    loadWorkerProfile();
+    loadServices();
+    
+  } catch (error) {
+    console.error('Ошибка проверки токена:', error);
+    localStorage.clear();
+    window.location.href = '/auto.html';
+  }
+}
+
+function loadWorkerProfile() {
+  document.getElementById('welcomeTitle').textContent = `Добро пожаловать, ${workerData.name}!`;
+  document.getElementById('profileName').textContent = workerData.name;
+  document.getElementById('profileAvatar').textContent = workerData.name.charAt(0).toUpperCase();
+}
+
+async function loadServices() {
+  const token = localStorage.getItem('token');
+  
+  try {
+    const response = await fetch('/api/get-worker-services', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      services = data.services || [];
+      renderServices();
+      updateStats();
+    } else {
+      showEmptyState();
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки услуг:', error);
+    showEmptyState();
+  }
+}
+
+function renderServices() {
+  const list = document.getElementById('servicesList');
+  
+  if (services.length === 0) {
+    showEmptyState();
+    return;
+  }
+  
+  list.innerHTML = services.map(service => `
+    <div class="service-item">
+      <div class="service-header">
+        <div>
+          <div class="service-title">${service.title}</div>
+          <div class="service-description">${service.description}</div>
+        </div>
+        <div class="service-price">${service.price} ₽/час</div>
+      </div>
+      <div class="service-meta">
+        <div class="service-meta-item">
+          <span class="material-symbols-outlined" style="font-size: 16px;">category</span>
+          ${getCategoryName(service.category)}
+        </div>
+        ${service.experience ? `
+        <div class="service-meta-item">
+          <span class="material-symbols-outlined" style="font-size: 16px;">work</span>
+          ${service.experience} лет опыта
+        </div>
+        ` : ''}
+        ${service.guarantee ? `
+        <div class="service-meta-item">
+          <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
+          Гарантия ${service.guarantee} год(а)
+        </div>
+        ` : ''}
+      </div>
+      <div class="service-actions">
+        <button class="btn btn-outline" onclick="editService(${service.id})">✏️ Редактировать</button>
+        <button class="btn btn-danger" onclick="deleteService(${service.id})">🗑️ Удалить</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getCategoryName(category) {
+  const categories = {
+    'construction': 'Строительство',
+    'repair': 'Ремонт',
+    'electrical': 'Электрика',
+    'plumbing': 'Сантехника',
+    'other': 'Другое'
+  };
+  return categories[category] || category;
+}
+
+function showEmptyState() {
+  document.getElementById('servicesList').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">У вас пока нет услуг</div>
+      <div class="empty-text">Добавьте первую услугу, чтобы клиенты могли вас найти</div>
+      <button class="btn btn-primary" onclick="openAddServiceModal()">
+        <span class="material-symbols-outlined">add</span>
+        Добавить услугу
+      </button>
+    </div>
+  `;
+}
+
+function updateStats() {
+  document.getElementById('statServices').textContent = services.length;
+  // TODO: Загрузить реальное количество заказов
+  document.getElementById('statOrders').textContent = '0';
+  document.getElementById('statRating').textContent = '0.0';
+}
+
+function openAddServiceModal() {
+  currentServiceId = null;
+  document.getElementById('modalTitle').textContent = 'Добавить услугу';
+  document.getElementById('serviceForm').reset();
+  document.getElementById('serviceModal').classList.add('active');
+}
+
+function closeServiceModal() {
+  document.getElementById('serviceModal').classList.remove('active');
+}
+
+async function saveService(event) {
+  event.preventDefault();
+  
+  const token = localStorage.getItem('token');
+  const serviceData = {
+    title: document.getElementById('serviceTitle').value,
+    price: parseFloat(document.getElementById('servicePrice').value),
+    category: document.getElementById('serviceCategory').value,
+    description: document.getElementById('serviceDescription').value,
+    experience: parseInt(document.getElementById('serviceExperience').value) || 0,
+    guarantee: parseInt(document.getElementById('serviceGuarantee').value) || 0,
+    completion_time: document.getElementById('serviceCompletionTime').value,
+    telegram: document.getElementById('serviceTelegram').value,
+    max: document.getElementById('serviceMax').value
+  };
+  
+  try {
+    const response = await fetch('/api/create-service', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(serviceData)
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('✅ Услуга сохранена!');
+      closeServiceModal();
+      loadServices();
+    } else {
+      alert('❌ ' + data.message);
+    }
+  } catch (error) {
+    console.error('Ошибка сохранения услуги:', error);
+    alert('❌ Ошибка сохранения услуги');
+  }
+}
+
+function editService(id) {
+  const service = services.find(s => s.id === id);
+  if (!service) return;
+  
+  currentServiceId = id;
+  document.getElementById('modalTitle').textContent = 'Редактировать услугу';
+  document.getElementById('serviceTitle').value = service.title;
+  document.getElementById('servicePrice').value = service.price;
+  document.getElementById('serviceCategory').value = service.category;
+  document.getElementById('serviceDescription').value = service.description;
+  document.getElementById('serviceExperience').value = service.experience || '';
+  document.getElementById('serviceGuarantee').value = service.guarantee || '';
+  document.getElementById('serviceCompletionTime').value = service.completion_time || '';
+  document.getElementById('serviceTelegram').value = service.telegram || '';
+  document.getElementById('serviceMax').value = service.max || '';
+  
+  document.getElementById('serviceModal').classList.add('active');
+}
+
+async function deleteService(id) {
+  if (!confirm('Вы уверены, что хотите удалить эту услугу?')) return;
+  
+  const token = localStorage.getItem('token');
+  
+  try {
+    const response = await fetch(`/api/delete-service/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('✅ Услуга удалена!');
+      loadServices();
+    } else {
+      alert('❌ ' + data.message);
+    }
+  } catch (error) {
+    console.error('Ошибка удаления услуги:', error);
+    alert('❌ Ошибка удаления услуги');
+  }
+}
+
+function editProfile() {
+  alert('Функция редактирования профиля в разработке!');
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = '/auto.html';
+}
+
+// Закрытие модалки по клику вне
+window.onclick = function(event) {
+  const modal = document.getElementById('serviceModal');
+  if (event.target === modal) {
+    closeServiceModal();
+  }
+};
+</script>
+</body>
+</html>
