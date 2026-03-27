@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import AdminView from '../views/AdminView.vue'
+import CustomerView from '../views/CustomerView.vue'
+import WorkerView from '../views/WorkerView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,25 +15,24 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('../views/AdminView.vue'),
+      component: AdminView,
       meta: { requiresAuth: true, role: 'admin' }
     },
     {
       path: '/customer',
       name: 'customer',
-      component: () => import('../views/CustomerView.vue'),
+      component: CustomerView,
       meta: { requiresAuth: true, role: 'customer' }
     },
     {
       path: '/worker',
       name: 'worker',
-      component: () => import('../views/WorkerView.vue'),
+      component: WorkerView,
       meta: { requiresAuth: true, role: 'worker' }
     }
   ]
 })
 
-// Глобальная защита маршрутов
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('accessToken')
   const role = localStorage.getItem('role')
