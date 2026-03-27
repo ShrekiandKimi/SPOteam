@@ -151,10 +151,11 @@ const userName = computed(() => {
   return 'Пользователь'
 })
 
+// 🔹 ИСПРАВЛЕНО: раскомментирован вызов fetchOrders()
 onMounted(async () => {
+  console.log('🔍 WorkerView mounted')
   await fetchServices()
-  // Заказы暂时 отключаем чтобы не было ошибки 500
-  // await fetchOrders()
+  await fetchOrders()  // ✅ ТЕПЕРЬ ВЫЗЫВАЕТСЯ!
 })
 
 async function fetchServices() {
@@ -177,20 +178,27 @@ async function fetchServices() {
   }
 }
 
+// 🔹 ДОБАВЛЕНЫ ЛОГИ ДЛЯ ОТЛАДКИ
 async function fetchOrders() {
+  console.log('🔍 fetchOrders called')
   loadingOrders.value = true
   try {
     const token = localStorage.getItem('accessToken')
+    console.log('🔍 Token exists:', !!token)
+    
     const response = await api.get('/api/get-worker-orders', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
+    console.log('🔍 Response:', response.data)
+    
     if (response.data && response.data.success) {
       orders.value = response.data.orders || []
+      console.log('✅ Загружено заказов:', orders.value.length)
     } else {
       orders.value = []
     }
   } catch (error) {
-    console.error('Ошибка загрузки заказов:', error)
+    console.error('❌ Ошибка загрузки заказов:', error)
     orders.value = []
   } finally {
     loadingOrders.value = false
@@ -334,7 +342,7 @@ async function deleteService(serviceId) {
 .btn-outline { background: transparent; border: 2px solid #135bec; color: #135bec; }
 .btn-outline:hover { background: #135bec; color: white; }
 .btn-primary { background: #135bec; color: white; }
-.btn-primary:hover { background: #0d4bd6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(19, 91, 236, 0.3); }
+.btn-primary:hover { background: #0d4bd6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(19,91,236,0.3); }
 .btn-success { background: #10b981; color: white; }
 .btn-success:hover { background: #059669; }
 .btn-danger { background: #ef4444; color: white; }
