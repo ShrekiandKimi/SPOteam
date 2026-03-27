@@ -45,7 +45,6 @@ type LoginResponse struct {
 	Role        string `json:"role,omitempty"`
 }
 
-// 🔹 Запрос регистрации (только базовые поля)
 type RegisterRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -53,7 +52,6 @@ type RegisterRequest struct {
 	Role     string `json:"role"`
 }
 
-// 🔹 Запрос создания услуги (для исполнителя)
 type CreateServiceRequest struct {
 	Title          string  `json:"title"`
 	Price          float64 `json:"price"`
@@ -69,6 +67,7 @@ type CreateServiceRequest struct {
 type Service struct {
 	ID             int       `json:"id"`
 	WorkerID       int       `json:"worker_id"`
+	WorkerName     string    `json:"worker_name"`
 	Title          string    `json:"title"`
 	Price          float64   `json:"price"`
 	Category       string    `json:"category"`
@@ -86,7 +85,6 @@ type Service struct {
 type Order struct {
 	ID               int       `json:"id"`
 	CustomerID       int       `json:"customer_id"`
-	AdminID          int       `json:"admin_id"`
 	ServiceTitle     string    `json:"service_title"`
 	ServiceDesc      string    `json:"service_description"`
 	Price            float64   `json:"price"`
@@ -107,7 +105,7 @@ type OrderRequest struct {
 }
 
 var (
-	jwtSecret = []byte("secret-key-2026!")
+	jwtSecret = []byte("your-secret-key-2026-change-in-production")
 	db        *sql.DB
 )
 
@@ -127,7 +125,6 @@ func initDB() error {
 
 	fmt.Println("✅ PostgreSQL подключен!")
 	
-	// 🔹 Создаём таблицы, если не существуют
 	if err := createTables(); err != nil {
 		return fmt.Errorf("ошибка создания таблиц: %v", err)
 	}
@@ -135,9 +132,7 @@ func initDB() error {
 	return nil
 }
 
-// 🔹 Создание таблиц
 func createTables() error {
-	// Таблица users
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,
@@ -155,7 +150,6 @@ func createTables() error {
 		return err
 	}
 
-	// 🔹 Таблица услуг исполнителей
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS services (
 			id SERIAL PRIMARY KEY,
@@ -178,7 +172,6 @@ func createTables() error {
 		return err
 	}
 
-	// Таблица orders
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS orders (
 			id SERIAL PRIMARY KEY,
@@ -229,43 +222,45 @@ func generateToken(user User) (string, error) {
 	return token.SignedString(jwtSecret)
 }
 
-// 🔹 Обработчик регистрации (УПРОЩЁННЫЙ)
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Неверный формат данных"})
 		return
 	}
 
-	// Валидация
 	if req.Email == "" || req.Password == "" || req.Name == "" || req.Role == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Все поля обязательны"})
 		return
 	}
 	if len(req.Password) < 6 {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Пароль должен быть не менее 6 символов"})
 		return
 	}
 	if req.Role != "customer" && req.Role != "worker" && req.Role != "admin" {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Неверная роль"})
 		return
 	}
 
-	// Проверка на существующего пользователя
 	var exists bool
 	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)", req.Email).Scan(&exists)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Ошибка базы данных"})
 		return
 	}
 	if exists {
+		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Пользователь с таким email уже существует"})
 		return
 	}
 
-	// Вставка пользователя (ТОЛЬКО базовые данные)
 	var userID int
 	err = db.QueryRow(`
 		INSERT INTO users (email, password_hash, role, name, created_at, updated_at) 
@@ -273,15 +268,14 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	`, req.Email, req.Password, req.Role, req.Name, time.Now(), time.Now()).Scan(&userID)
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Ошибка регистрации"})
 		return
 	}
 
-	// 🔹 Убрано: профиль исполнителя больше не создаётся при регистрации!
-	// Исполнитель добавит информацию об услугах позже в личном кабинете
-
-	// Успех
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": "✅ Регистрация успешна!",
 		"email":   req.Email,
 		"role":    req.Role,
@@ -296,15 +290,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := getUserByEmail(req.Email)
 	if err != nil {
 		fmt.Printf("❌ Ошибка БД: %v\n", err)
-		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Ошибка сервера: " + err.Error()})
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Ошибка сервера"})
 		return
 	}
 	if user == nil || user.Password != req.Password {
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Неверный email или пароль"})
 		return
 	}
 
-	token, _ := generateToken(*user)
+	token, err := generateToken(*user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Ошибка генерации токена"})
+		return
+	}
+
 	json.NewEncoder(w).Encode(LoginResponse{
 		Success:     true,
 		AccessToken: token,
@@ -316,6 +318,7 @@ func validateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	if tokenString == "" {
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]bool{"valid": false})
 		return
 	}
@@ -325,6 +328,7 @@ func validateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]bool{"valid": false})
 		return
 	}
@@ -338,7 +342,6 @@ func validateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// 🔹 Создать услугу (для исполнителя)
 func createServiceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
@@ -347,18 +350,20 @@ func createServiceHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "worker" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль исполнителя"})
 		return
 	}
 
 	var req CreateServiceRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Неверный формат данных"})
 		return
 	}
 
-	// Валидация
 	if req.Title == "" || req.Price <= 0 || req.Category == "" || req.Description == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Заполните все обязательные поля"})
 		return
 	}
@@ -370,6 +375,7 @@ func createServiceHandler(w http.ResponseWriter, r *http.Request) {
 	`, claims.UserID, req.Title, req.Price, req.Category, req.Description, req.Experience, req.Guarantee, req.CompletionTime, req.Telegram, req.Max, time.Now(), time.Now())
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка создания услуги"})
 		return
 	}
@@ -377,7 +383,6 @@ func createServiceHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Услуга создана"})
 }
 
-// 🔹 Получить услуги исполнителя
 func getWorkerServicesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
@@ -386,6 +391,7 @@ func getWorkerServicesHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "worker" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль исполнителя"})
 		return
 	}
@@ -395,6 +401,7 @@ func getWorkerServicesHandler(w http.ResponseWriter, r *http.Request) {
 		FROM services WHERE worker_id = $1 ORDER BY created_at DESC
 	`, claims.UserID)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка БД"})
 		return
 	}
@@ -410,7 +417,6 @@ func getWorkerServicesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "services": services})
 }
 
-// 🔹 Удалить услугу (для исполнителя)
 func deleteServiceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
@@ -419,21 +425,22 @@ func deleteServiceHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "worker" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль исполнителя"})
 		return
 	}
 
-	// Получаем ID услуги из URL
 	vars := mux.Vars(r)
 	serviceID, err := strconv.Atoi(vars["id"])
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Неверный ID услуги"})
 		return
 	}
 
-	// Проверяем, что услуга принадлежит этому исполнителю
 	_, err = db.Exec("DELETE FROM services WHERE id = $1 AND worker_id = $2", serviceID, claims.UserID)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка удаления услуги"})
 		return
 	}
@@ -441,44 +448,27 @@ func deleteServiceHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Услуга удалена"})
 }
 
-// 🔹 Получить все услуги (для главной страницы)
 func getAllServicesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
 	rows, err := db.Query(`
-		SELECT s.id, s.worker_id, u.name as worker_name, s.title, s.price, s.category, s.description, s.experience, s.guarantee, s.completion_time, s.telegram, s.max, s.rating, s.created_at
+		SELECT s.id, s.worker_id, u.name as worker_name, s.title, s.price, s.category, s.description, s.experience, s.guarantee, s.completion_time, s.telegram, s.max, COALESCE(s.rating, 0.00), s.created_at, s.updated_at
 		FROM services s
 		JOIN users u ON s.worker_id = u.id
 		ORDER BY s.created_at DESC
 	`)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка БД"})
 		return
 	}
 	defer rows.Close()
 
-	var services []map[string]interface{}
+	var services []Service
 	for rows.Next() {
 		var s Service
-		var workerName string
-		rows.Scan(&s.ID, &s.WorkerID, &workerName, &s.Title, &s.Price, &s.Category, &s.Description, &s.Experience, &s.Guarantee, &s.CompletionTime, &s.Telegram, &s.Max, &s.Rating, &s.CreatedAt)
-		
-		services = append(services, map[string]interface{}{
-			"id":              s.ID,
-			"worker_id":       s.WorkerID,
-			"worker_name":     workerName,
-			"title":           s.Title,
-			"price":           s.Price,
-			"category":        s.Category,
-			"description":     s.Description,
-			"experience":      s.Experience,
-			"guarantee":       s.Guarantee,
-			"completion_time": s.CompletionTime,
-			"telegram":        s.Telegram,
-			"max":             s.Max,
-			"rating":          s.Rating,
-			"created_at":      s.CreatedAt,
-		})
+		rows.Scan(&s.ID, &s.WorkerID, &s.WorkerName, &s.Title, &s.Price, &s.Category, &s.Description, &s.Experience, &s.Guarantee, &s.CompletionTime, &s.Telegram, &s.Max, &s.Rating, &s.CreatedAt, &s.UpdatedAt)
+		services = append(services, s)
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "services": services})
@@ -492,6 +482,7 @@ func createOrderHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "customer" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль клиента"})
 		return
 	}
@@ -504,6 +495,7 @@ func createOrderHandler(w http.ResponseWriter, r *http.Request) {
 	`, claims.UserID, req.ServiceTitle, req.ServiceDesc, req.Price, req.CustomerName, req.CustomerPhone, req.CustomerAddress)
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка создания заказа"})
 		return
 	}
@@ -518,6 +510,7 @@ func getOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль админа"})
 		return
 	}
@@ -527,6 +520,7 @@ func getOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		FROM orders ORDER BY created_at DESC
 	`)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка БД"})
 		return
 	}
@@ -549,6 +543,7 @@ func updateOrderStatusHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль админа"})
 		return
 	}
@@ -560,6 +555,7 @@ func updateOrderStatusHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&req)
 	_, err = db.Exec("UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2", req.Status, req.OrderID)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка обновления"})
 		return
 	}
@@ -574,6 +570,7 @@ func getCustomerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid || claims.Role != "customer" {
+		w.WriteHeader(http.StatusForbidden)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль клиента"})
 		return
 	}
@@ -583,6 +580,7 @@ func getCustomerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		FROM orders WHERE customer_id = $1 ORDER BY created_at DESC
 	`, claims.UserID)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка БД"})
 		return
 	}
@@ -605,48 +603,11 @@ func main() {
 
 	r := mux.NewRouter()
 
-	// Статические файлы
-	r.PathPrefix("/auto.html").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "Authorization/auto.html")
-	})
-	r.PathPrefix("/script.js").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "Authorization/script.js")
-	})
-	r.PathPrefix("/styles.css").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "Authorization/styles.css")
-	})
-	r.PathPrefix("/admin.html").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "Admin/admin.html")
-	})
-	r.PathPrefix("/customer.html").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "customer.html")
-	})
-	r.PathPrefix("/worker-dashboard.html").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "worker-dashboard.html")
-	})
-
-	// 🔹 API маршруты
-	r.HandleFunc("/api/register", registerHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc("/api/login", loginHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc("/api/validate-token", validateTokenHandler).Methods("POST", "OPTIONS")
-	
-	// 🔹 API для услуг исполнителя
-	r.HandleFunc("/api/create-service", createServiceHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc("/api/get-worker-services", getWorkerServicesHandler).Methods("GET", "OPTIONS")
-	r.HandleFunc("/api/delete-service/{id}", deleteServiceHandler).Methods("DELETE", "OPTIONS")
-	r.HandleFunc("/api/get-all-services", getAllServicesHandler).Methods("GET", "OPTIONS")
-	
-	// 🔹 API для заказов
-	r.HandleFunc("/api/create-order", createOrderHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc("/api/get-orders", getOrdersHandler).Methods("GET", "OPTIONS")
-	r.HandleFunc("/api/update-order-status", updateOrderStatusHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc("/api/get-customer-orders", getCustomerOrdersHandler).Methods("GET", "OPTIONS")
-
 	// CORS middleware
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
@@ -656,13 +617,21 @@ func main() {
 		})
 	})
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/auto.html", http.StatusTemporaryRedirect)
-	})
+	// API routes
+	r.HandleFunc("/api/register", registerHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/login", loginHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/validate-token", validateTokenHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/create-service", createServiceHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/get-worker-services", getWorkerServicesHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/delete-service/{id}", deleteServiceHandler).Methods("DELETE", "OPTIONS")
+	r.HandleFunc("/api/get-all-services", getAllServicesHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/create-order", createOrderHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/get-orders", getOrdersHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/update-order-status", updateOrderStatusHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/get-customer-orders", getCustomerOrdersHandler).Methods("GET", "OPTIONS")
 
 	fmt.Println("🚀 Сервер запущен: http://localhost:8080")
-	fmt.Println("👤 Тестовый админ: admin@tracking-system.com / 12345")
-	fmt.Println("👤 Тестовый клиент: customer@test.com / customer123")
+	fmt.Println("📝 API endpoints доступны на /api/*")
 
 	http.ListenAndServe(":8080", r)
 }

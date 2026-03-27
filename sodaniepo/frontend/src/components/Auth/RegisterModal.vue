@@ -7,99 +7,42 @@
       </div>
       <div class="modal-body">
         <form @submit.prevent="handleRegister">
-          <!-- Выбор роли -->
           <div class="form-group">
-            <label>Я хочу зарегистрироваться как:</label>
+            <label>Роль:</label>
             <div class="role-selector">
-              <div 
-                class="role-option" 
-                :class="{ selected: role === 'customer' }"
-                @click="role = 'customer'"
-              >
+              <div class="role-option" :class="{ selected: role === 'customer' }" @click="role = 'customer'">
                 <input type="radio" name="userRole" value="customer" v-model="role">
-                <span class="role-title">👤 Заказчик</span>
-                <span class="role-desc">Искать услуги</span>
+                <span>👤 Заказчик</span>
               </div>
-              <div 
-                class="role-option" 
-                :class="{ selected: role === 'worker' }"
-                @click="role = 'worker'"
-              >
+              <div class="role-option" :class="{ selected: role === 'worker' }" @click="role = 'worker'">
                 <input type="radio" name="userRole" value="worker" v-model="role">
-                <span class="role-title">🔨 Исполнитель</span>
-                <span class="role-desc">Предлагать услуги</span>
+                <span>🔨 Исполнитель</span>
+              </div>
+              <div class="role-option" :class="{ selected: role === 'admin' }" @click="role = 'admin'">
+                <input type="radio" name="userRole" value="admin" v-model="role">
+                <span>🔧 Администратор</span>
               </div>
             </div>
           </div>
 
-          <!-- Общие поля -->
           <div class="form-group">
             <label>Email</label>
-            <input 
-              type="email" 
-              v-model="email" 
-              required 
-              placeholder="your@email.com"
-            >
-            <div class="form-error" :class="{ active: errors.email }">Неверный формат email</div>
+            <input type="email" v-model="email" required placeholder="email@example.com">
           </div>
           
           <div class="form-group">
             <label>Имя</label>
-            <input 
-              type="text" 
-              v-model="name" 
-              required 
-              placeholder="Ваше имя"
-            >
+            <input type="text" v-model="name" required placeholder="Ваше имя">
           </div>
           
           <div class="form-group">
             <label>Пароль</label>
-            <input 
-              type="password" 
-              v-model="password" 
-              required 
-              placeholder="••••••••" 
-              minlength="6"
-            >
-            <div class="form-error" :class="{ active: errors.password }">Минимум 6 символов</div>
+            <input type="password" v-model="password" required minlength="6" placeholder="••••••">
           </div>
           
           <div class="form-group">
             <label>Подтвердите пароль</label>
-            <input 
-              type="password" 
-              v-model="confirmPassword" 
-              required 
-              placeholder="••••••••"
-            >
-            <div class="form-error" :class="{ active: errors.confirm }">Пароли не совпадают</div>
-          </div>
-
-          <!-- Поля для исполнителя -->
-          <div v-if="role === 'worker'" class="worker-fields active">
-            <h3 style="margin-bottom: 16px; color: #1e293b;">📝 Информация о вас</h3>
-            <div class="form-group">
-              <label>Специальность</label>
-              <input type="text" v-model="workerProfile.specialty" placeholder="Например: Сантехник, Электрик">
-            </div>
-            <div class="form-group">
-              <label>Опыт работы (лет)</label>
-              <input type="number" v-model.number="workerProfile.experience_years" min="0" placeholder="5">
-            </div>
-            <div class="form-group">
-              <label>Телефон</label>
-              <input type="tel" v-model="workerProfile.phone" placeholder="+7 (999) 123-45-67">
-            </div>
-            <div class="form-group">
-              <label>Telegram</label>
-              <input type="text" v-model="workerProfile.telegram" placeholder="@username">
-            </div>
-            <div class="form-group">
-              <label>О себе</label>
-              <textarea v-model="workerProfile.description" rows="3" placeholder="Расскажите о своём опыте и навыках..."></textarea>
-            </div>
+            <input type="password" v-model="confirmPassword" required placeholder="••••••">
           </div>
 
           <button type="submit" class="btn btn-primary" style="width: 100%" :disabled="loading">
@@ -117,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
@@ -134,65 +77,44 @@ const password = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
 
-const workerProfile = reactive({
-  specialty: '',
-  experience_years: 0,
-  phone: '',
-  telegram: '',
-  description: ''
-})
-
-const errors = reactive({
-  email: false,
-  password: false,
-  confirm: false
-})
-
 function closeModal() {
   emit('update:modelValue', false)
-  resetForm()
-}
-
-function resetForm() {
   email.value = ''
   name.value = ''
   password.value = ''
   confirmPassword.value = ''
   role.value = 'customer'
-  Object.keys(errors).forEach(key => errors[key] = false)
 }
 
 async function handleRegister() {
-  // Валидация
-  errors.email = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)
-  errors.password = password.value.length < 6
-  errors.confirm = password.value !== confirmPassword.value
+  if (password.value !== confirmPassword.value) {
+    alert('❌ Пароли не совпадают')
+    return
+  }
   
-  if (Object.values(errors).some(e => e)) return
+  if (password.value.length < 6) {
+    alert('❌ Пароль должен быть не менее 6 символов')
+    return
+  }
 
   loading.value = true
   try {
-    const registerData = {
+    const result = await authStore.register({
       email: email.value,
       password: password.value,
       name: name.value,
       role: role.value
-    }
-    
-    if (role.value === 'worker') {
-      registerData.worker_profile = { ...workerProfile }
-    }
-    
-    const result = await authStore.register(registerData)
+    })
     
     if (result.success) {
-      alert('✅ Регистрация успешна! Теперь вы можете войти.')
+      alert('✅ Регистрация успешна! Теперь войдите.')
       closeModal()
       emit('show-login')
     } else {
       alert('❌ ' + result.error)
     }
   } catch (error) {
+    console.error('Register error:', error)
     alert('❌ Ошибка подключения к серверу')
   } finally {
     loading.value = false
@@ -206,5 +128,109 @@ function switchToLogin() {
 </script>
 
 <style scoped>
-/* Стили уже есть в global CSS */
+.modal { 
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0, 0, 0, 0.6); 
+  backdrop-filter: blur(4px); 
+  z-index: 1000; 
+  align-items: center; 
+  justify-content: center; 
+}
+.modal.active { 
+  display: flex; 
+}
+.modal-content { 
+  background: white; 
+  border-radius: 12px; 
+  width: 90%; 
+  max-width: 500px; 
+  max-height: 90vh; 
+  overflow-y: auto; 
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); 
+  animation: slideIn 0.3s ease; 
+}
+.modal-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 20px 24px; 
+  border-bottom: 1px solid #e2e8f0; 
+}
+.modal-header h2 { 
+  margin: 0; 
+  font-size: 1.25rem; 
+  color: #1e293b; 
+}
+.modal-close { 
+  background: none; 
+  border: none; 
+  font-size: 28px; 
+  cursor: pointer; 
+  color: #64748b; 
+}
+.modal-body { 
+  padding: 24px; 
+}
+.form-group { 
+  margin-bottom: 16px; 
+}
+.form-group label { 
+  display: block; 
+  margin-bottom: 8px; 
+  color: #475569; 
+  font-size: 14px; 
+}
+.form-group input { 
+  width: 100%; 
+  padding: 12px; 
+  border: 1px solid #e2e8f0; 
+  border-radius: 8px; 
+  font-size: 14px; 
+}
+.form-group input:focus { 
+  outline: none; 
+  border-color: #135bec; 
+  box-shadow: 0 0 0 3px rgba(19, 91, 236, 0.1); 
+}
+.role-selector { 
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px; 
+}
+.role-option { 
+  padding: 12px;
+  border: 2px solid #e2e8f0; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  text-align: center; 
+}
+.role-option.selected { 
+  border-color: #135bec; 
+  background: #eff6ff; 
+}
+.role-option input { 
+  margin-right: 8px; 
+}
+.btn-primary { 
+  background: #135bec; 
+  color: white; 
+  padding: 12px; 
+  border: none; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  cursor: pointer; 
+}
+.btn-primary:disabled { 
+  background: #9ca3af; 
+  cursor: not-allowed; 
+}
+@keyframes slideIn { 
+  from { transform: translateY(-20px); opacity: 0; } 
+  to { transform: translateY(0); opacity: 1; } 
+}
 </style>

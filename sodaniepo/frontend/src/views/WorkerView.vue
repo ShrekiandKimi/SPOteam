@@ -3,9 +3,8 @@
     <Header @open-login="showLogin = true" @open-register="showRegister = true" />
     
     <div class="dashboard-container">
-      <h1>Здравствуйте, {{ authStore.userName }}! 👋</h1>
+      <h1>Здравствуйте, {{ userName }}! 👋</h1>
       
-      <!-- Статистика -->
       <section class="dashboard-section">
         <h2>📊 Статистика</h2>
         <div class="stats-grid">
@@ -14,17 +13,16 @@
             <div class="stat-label">Активных услуг</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">{{ stats.rating }}</div>
-            <div class="stat-label">Средний рейтинг</div>
+            <div class="stat-number">4.8</div>
+            <div class="stat-label">Рейтинг</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">{{ stats.reviews }}</div>
+            <div class="stat-number">12</div>
             <div class="stat-label">Отзывов</div>
           </div>
         </div>
       </section>
       
-      <!-- Новые заявки -->
       <section class="dashboard-section">
         <h2>📬 Новые заявки</h2>
         <div v-if="newOrders.length === 0" class="empty">Нет новых заявок</div>
@@ -37,14 +35,13 @@
               <span>📅 {{ formatDate(order.created_at) }}</span>
             </div>
             <div class="order-actions">
-              <button class="btn btn-success" @click="confirmOrder(order.id)">Подтвердить</button>
-              <button class="btn btn-outline" @click="rejectOrder(order.id)">Отклонить</button>
+              <button class="btn btn-success">Подтвердить</button>
+              <button class="btn btn-outline">Отклонить</button>
             </div>
           </div>
         </div>
       </section>
       
-      <!-- Мои услуги -->
       <section class="dashboard-section">
         <h2>🔨 Мои услуги</h2>
         <button class="btn btn-primary" @click="showCreateService = true">+ Добавить услугу</button>
@@ -77,7 +74,6 @@
     
     <Footer />
     
-    <!-- Форма создания услуги -->
     <CreateServiceForm 
       v-if="showCreateService"
       v-model="showCreateService"
@@ -87,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/api'
 import Header from '@/components/Layout/Header.vue'
@@ -102,11 +98,7 @@ const showCreateService = ref(false)
 const showLogin = ref(false)
 const showRegister = ref(false)
 
-const stats = reactive({
-  orders: 0,
-  rating: 4.8,
-  reviews: 12
-})
+const userName = authStore.user?.name || authStore.user?.email?.split('@')[0] || 'Пользователь'
 
 onMounted(async () => {
   await fetchServices()
@@ -117,9 +109,7 @@ async function fetchServices() {
   try {
     const token = localStorage.getItem('accessToken')
     const response = await api.get('/api/get-worker-services', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data.success) {
       services.value = response.data.services
@@ -151,9 +141,7 @@ async function deleteService(serviceId) {
   try {
     const token = localStorage.getItem('accessToken')
     const response = await api.delete(`/api/delete-service/${serviceId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data.success) {
       alert('✅ Услуга удалена')
@@ -166,16 +154,6 @@ async function deleteService(serviceId) {
     console.error(error)
   }
 }
-
-function confirmOrder(orderId) {
-  alert('✅ Заказ подтверждён!')
-  console.log('Confirm order:', orderId)
-}
-
-function rejectOrder(orderId) {
-  alert('❌ Заказ отклонён')
-  console.log('Reject order:', orderId)
-}
 </script>
 
 <style scoped>
@@ -183,19 +161,16 @@ function rejectOrder(orderId) {
   min-height: 100vh;
   background: #f5f5f5;
 }
-
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
 }
-
 .dashboard-container h1 {
   font-size: 32px;
   color: #1e293b;
   margin-bottom: 32px;
 }
-
 .dashboard-section {
   background: white;
   border-radius: 12px;
@@ -203,88 +178,74 @@ function rejectOrder(orderId) {
   margin-bottom: 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
 .dashboard-section h2 {
   font-size: 24px;
   color: #1e293b;
   margin-bottom: 20px;
 }
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
 }
-
 .stat-card {
   background: #f8fafc;
   padding: 24px;
   border-radius: 8px;
   text-align: center;
 }
-
 .stat-number {
   font-size: 36px;
   font-weight: 700;
   color: #135bec;
   margin-bottom: 8px;
 }
-
 .stat-label {
   color: #64748b;
   font-size: 14px;
 }
-
 .empty {
   text-align: center;
   padding: 40px;
   color: #64748b;
 }
-
 .loading {
   text-align: center;
   padding: 40px;
   color: #64748b;
 }
-
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
   margin-top: 20px;
 }
-
 .service-card {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 16px;
 }
-
 .service-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
 }
-
 .service-header h3 {
   font-size: 18px;
   color: #1e293b;
 }
-
 .service-price {
   font-size: 18px;
   font-weight: 700;
   color: #135bec;
 }
-
 .service-description {
   color: #64748b;
   font-size: 14px;
   margin-bottom: 12px;
   line-height: 1.5;
 }
-
 .service-meta {
   display: flex;
   justify-content: space-between;
@@ -292,24 +253,20 @@ function rejectOrder(orderId) {
   color: #475569;
   margin-bottom: 12px;
 }
-
 .service-actions {
   display: flex;
   gap: 8px;
 }
-
 .orders-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-
 .order-card {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 16px;
 }
-
 .order-meta {
   display: flex;
   gap: 16px;
@@ -317,12 +274,10 @@ function rejectOrder(orderId) {
   font-size: 14px;
   margin: 12px 0;
 }
-
 .order-actions {
   display: flex;
   gap: 12px;
 }
-
 .btn {
   padding: 10px 20px;
   border-radius: 8px;
@@ -333,34 +288,28 @@ function rejectOrder(orderId) {
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
 }
-
 .btn-outline {
   background: transparent;
   border: 2px solid #135bec;
   color: #135bec;
 }
-
 .btn-outline:hover {
   background: #135bec;
   color: white;
 }
-
 .btn-primary {
   background: #135bec;
   color: white;
 }
-
 .btn-primary:hover {
   background: #0d4bd6;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(19, 91, 236, 0.3);
 }
-
 .btn-success {
   background: #10b981;
   color: white;
 }
-
 .btn-success:hover {
   background: #059669;
 }

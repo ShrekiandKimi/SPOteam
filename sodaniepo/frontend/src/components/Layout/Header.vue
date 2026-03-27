@@ -1,88 +1,112 @@
 <template>
   <header class="header">
-    <div class="logo">
+    <div class="logo" @click="goHome" style="cursor: pointer;">
       <span class="material-symbols-outlined">engineering</span>
       <h1>Staff Tracking</h1>
     </div>
     
-    <nav class="nav-links">
-      <a href="#services">Услуги</a>
+    <!-- Навигация на главной странице -->
+    <nav class="nav-links" v-if="isHomePage">
       <a href="#about">О нас</a>
+      <a href="#services">Актуальные услуги</a>
       <a href="#contacts">Контакты</a>
     </nav>
     
+    <!-- Навигация в кабинетах -->
+    <nav class="nav-links" v-else>
+      <a @click="goHome" style="cursor: pointer;">На главную</a>
+    </nav>
+    
+    <!-- Кнопки для гостей -->
     <div class="auth-buttons" v-if="!authStore.isAuthenticated">
       <button class="btn btn-outline" @click="emit('open-login')">Войти</button>
       <button class="btn btn-primary" @click="emit('open-register')">Регистрация</button>
     </div>
     
+    <!-- Меню пользователя -->
     <div class="user-menu" v-else>
       <div class="user-info" @click="toggleDropdown">
         <span class="user-avatar">👤</span>
-        <span class="user-name">{{ authStore.userName }}</span>
+        <span class="user-name">{{ userName }}</span>
         <span class="dropdown-arrow" :class="{ active: dropdownOpen }">▼</span>
       </div>
       
       <div class="user-dropdown" :class="{ active: dropdownOpen }">
-        <a :href="dashboardLink" class="dropdown-item">{{ dashboardText }}</a>
-        <a href="#" class="dropdown-item" @click.prevent="handleLogout">🚪 Выйти</a>
+        <a :href="profileLink" class="dropdown-item" @click="dropdownOpen = false">
+          <span class="dropdown-icon">👤</span>
+          <span class="dropdown-text">Мой профиль</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="#" class="dropdown-item logout" @click.prevent="handleLogout">
+          <span class="dropdown-icon">🚪</span>
+          <span class="dropdown-text">Выйти</span>
+        </a>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
 
-const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 const emit = defineEmits(['open-login', 'open-register'])
-
+const authStore = useAuthStore()
 const dropdownOpen = ref(false)
 
-const dashboardLink = computed(() => {
-  const routes = {
-    admin: '/admin',
-    customer: '/customer',
-    worker: '/worker'
-  }
-  return routes[authStore.userRole] || '/'
+// Проверка: на главной ли мы странице
+const isHomePage = computed(() => route.path === '/')
+
+// Имя пользователя
+const userName = computed(() => {
+  if (authStore.user?.name) return authStore.user.name
+  if (authStore.user?.email) return authStore.user.email.split('@')[0]
+  return 'Пользователь'
 })
 
-const dashboardText = computed(() => {
-  const texts = {
-    admin: '🏗️ Панель администратора',
-    customer: '📋 Мои заказы',
-    worker: '💼 Мой кабинет'
+// Ссылка на профиль по роли
+const profileLink = computed(() => {
+  const routes = { 
+    admin: '/admin', 
+    customer: '/customer', 
+    worker: '/worker' 
   }
-  return texts[authStore.userRole] || '📋 Кабинет'
+  return routes[authStore.user?.role] || '/'
 })
 
+// Переход на главную
+function goHome() {
+  router.push('/')
+}
+
+// Открыть/закрыть выпадающее меню
 function toggleDropdown() {
   dropdownOpen.value = !dropdownOpen.value
 }
 
+// Выход из аккаунта
 function handleLogout() {
   authStore.logout()
-  router.push('/')
   dropdownOpen.value = false
+  router.push('/')
 }
 
-// Закрытие dropdown при клике вне
-import { onMounted, onUnmounted } from 'vue'
-
+// Закрытие меню при клике вне
 function handleClickOutside(event) {
   if (!event.target.closest('.user-menu')) {
     dropdownOpen.value = false
   }
 }
 
+// Слушатель кликов при монтировании
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
 })
 
+// Очистка слушателя при размонтировании
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
@@ -100,53 +124,47 @@ onUnmounted(() => {
   top: 0; 
   z-index: 100; 
 }
-
 .logo { 
   display: flex; 
   align-items: center; 
   gap: 12px; 
 }
-
 .logo .material-symbols-outlined { 
   font-size: 36px; 
   color: #135bec; 
 }
-
 .logo h1 { 
   font-size: 24px; 
   color: #1e293b; 
   font-weight: 700; 
 }
-
 .nav-links { 
   display: flex; 
-  gap: 32px; 
+  gap: 24px; 
   align-items: center; 
 }
-
 .nav-links a { 
   text-decoration: none; 
   color: #475569; 
   font-weight: 500; 
   transition: color 0.2s; 
+  cursor: pointer;
 }
-
 .nav-links a:hover { 
   color: #135bec; 
 }
-
 .auth-buttons { 
   display: flex; 
   gap: 12px; 
   align-items: center; 
 }
-
 .user-menu { 
   position: relative; 
+  display: flex !important; 
+  align-items: center; 
 }
-
 .user-info { 
-  display: flex; 
+  display: flex !important; 
   align-items: center; 
   gap: 8px; 
   padding: 8px 16px; 
@@ -156,32 +174,26 @@ onUnmounted(() => {
   transition: all 0.2s; 
   border: 2px solid #e2e8f0; 
 }
-
 .user-info:hover { 
   background: #f1f5f9; 
   border-color: #135bec; 
 }
-
 .user-avatar { 
   font-size: 20px; 
 }
-
 .user-name { 
   font-weight: 600; 
   color: #1e293b; 
   font-size: 14px; 
 }
-
 .dropdown-arrow { 
   font-size: 10px; 
   color: #64748b; 
   transition: transform 0.2s; 
 }
-
 .dropdown-arrow.active { 
   transform: rotate(180deg); 
 }
-
 .user-dropdown { 
   position: absolute; 
   top: calc(100% + 8px); 
@@ -189,55 +201,72 @@ onUnmounted(() => {
   background: white; 
   border-radius: 8px; 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); 
-  min-width: 200px; 
+  min-width: 240px; 
   display: none; 
   z-index: 1001; 
   overflow: hidden; 
 }
-
 .user-dropdown.active { 
-  display: block; 
-  animation: slideIn 0.2s ease; 
+  display: block !important; 
 }
-
 .dropdown-item { 
   display: flex; 
   align-items: center; 
-  gap: 10px; 
+  gap: 12px; 
   padding: 12px 16px; 
   color: #475569; 
   text-decoration: none; 
   transition: all 0.2s; 
   font-size: 14px; 
+  cursor: pointer; 
 }
-
 .dropdown-item:hover { 
   background: #f8fafc; 
   color: #135bec; 
 }
-
-.dropdown-item:first-child { 
-  border-bottom: 1px solid #f1f5f9; 
+.dropdown-item.logout:hover { 
+  background: #fee2e2; 
+  color: #dc2626; 
 }
-
-@keyframes slideIn { 
-  from { 
-    transform: translateY(-20px); 
-    opacity: 0; 
-  } 
-  to { 
-    transform: translateY(0); 
-    opacity: 1; 
-  } 
+.dropdown-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 4px 0;
 }
-
+.dropdown-icon {
+  font-size: 18px;
+}
+.dropdown-text {
+  flex: 1;
+}
+.btn { 
+  padding: 10px 20px; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  border: none; 
+  font-family: 'Manrope', sans-serif; 
+  font-size: 14px; 
+}
+.btn-outline { 
+  background: transparent; 
+  border: 2px solid #135bec; 
+  color: #135bec; 
+}
+.btn-outline:hover { 
+  background: #135bec; 
+  color: white; 
+}
+.btn-primary { 
+  background: #135bec; 
+  color: white; 
+}
+.btn-primary:hover { 
+  background: #0d4bd6; 
+}
 @media (max-width: 768px) {
-  .nav-links { 
-    display: none; 
-  }
-  
-  .header { 
-    padding: 16px 20px; 
-  }
+  .nav-links { display: none; }
+  .header { padding: 16px 20px; }
 }
 </style>
