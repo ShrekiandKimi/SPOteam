@@ -23,9 +23,36 @@ export function useServices() {
     }
   }
 
+  async function fetchWorkerServices() {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const token = localStorage.getItem('accessToken')
+      const response = await api.get('/api/get-worker-services', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (response.data.success) {
+        services.value = response.data.services
+      }
+    } catch (err) {
+      error.value = err.message
+      console.error('Ошибка загрузки услуг:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function createService(serviceData) {
     try {
-      const response = await api.post('/api/create-service', serviceData)
+      const token = localStorage.getItem('accessToken')
+      const response = await api.post('/api/create-service', serviceData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       return response.data
     } catch (err) {
       console.error('Ошибка создания услуги:', err)
@@ -35,7 +62,12 @@ export function useServices() {
 
   async function deleteService(serviceId) {
     try {
-      const response = await api.delete(`/api/delete-service/${serviceId}`)
+      const token = localStorage.getItem('accessToken')
+      const response = await api.delete(`/api/delete-service/${serviceId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       return response.data
     } catch (err) {
       console.error('Ошибка удаления услуги:', err)
@@ -48,6 +80,7 @@ export function useServices() {
     loading,
     error,
     fetchServices,
+    fetchWorkerServices,
     createService,
     deleteService
   }
