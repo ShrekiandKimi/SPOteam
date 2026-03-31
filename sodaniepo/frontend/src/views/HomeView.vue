@@ -115,12 +115,53 @@
       </div>
       
       <div v-else class="services-grid">
-        <ServiceCard 
-          v-for="service in filteredServices" 
-          :key="service.id"
-          :service="service"
-          @select="openServiceModal"
-        />
+        <!-- 🔹 КАРТОЧКА УСЛУГИ — ВНУТРИ HOMVIEW -->
+        <div v-for="service in filteredServices" :key="service.id" class="service-card">
+          <div class="service-header">
+            <h3>{{ service.title }}</h3>
+            <span class="service-price">{{ service.price }} ₽/час</span>
+          </div>
+          <p class="service-description">{{ service.description }}</p>
+          
+          <div class="service-meta">
+            <span>Категория: {{ getCategoryName(service.category) }}</span>
+            <span>Опыт: {{ service.experience }} лет</span>
+          </div>
+          
+          <!-- 🔹 ИНФОРМАЦИЯ ОБ ИСПОЛНИТЕЛЕ -->
+          <div class="worker-info">
+            <div class="worker-name">
+              👤 {{ service.worker_name }}
+            </div>
+            <div class="worker-rating" v-if="service.rating > 0">
+              ⭐ {{ service.rating.toFixed(1) }}
+            </div>
+          </div>
+          
+          <!-- 🔹 ССЫЛКА НА ПРОФИЛЬ ИСПОЛНИТЕЛЯ -->
+          <router-link 
+            :to="`/profile/${service.worker_id}`" 
+            class="view-profile-link"
+          >
+            👁️ Посмотреть профиль и отзывы
+          </router-link>
+          
+          <!-- Кнопка заказать -->
+          <button 
+            v-if="authStore.isAuthenticated && authStore.user?.role === 'customer'"
+            class="btn btn-primary"
+            @click="openServiceModal(service)"
+          >
+            Заказать
+          </button>
+          <button 
+            v-else
+            class="btn btn-outline"
+            @click="showLogin = true"
+          >
+            Войти для заказа
+          </button>
+        </div>
       </div>
     </section>
     
@@ -154,7 +195,6 @@ import { useAuthStore } from '@/stores/auth'
 import api from '@/api'
 import Header from '@/components/Layout/Header.vue'
 import Footer from '@/components/Layout/Footer.vue'
-import ServiceCard from '@/components/Services/ServiceCard.vue'
 import LoginModal from '@/components/Auth/LoginModal.vue'
 import RegisterModal from '@/components/Auth/RegisterModal.vue'
 import OrderForm from '@/components/Services/OrderForm.vue'
@@ -235,6 +275,16 @@ function openServiceModal(service) {
 function onOrderCreated() {
   showOrderForm.value = false
   selectedService.value = null
+}
+
+function getCategoryName(category) {
+  const names = {
+    construction: 'Строительство',
+    repair: 'Ремонт',
+    electrical: 'Электрика',
+    plumbing: 'Сантехника'
+  }
+  return names[category] || category
 }
 </script>
 
@@ -468,6 +518,128 @@ function onOrderCreated() {
   gap: 24px; 
 }
 
+/* 🔹 СТИЛИ КАРТОЧКИ УСЛУГИ */
+.service-card { 
+  background: white; 
+  border-radius: 12px; 
+  padding: 24px; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+  transition: all 0.3s; 
+}
+
+.service-card:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15); 
+}
+
+.service-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 12px; 
+}
+
+.service-header h3 { 
+  font-size: 20px; 
+  color: #1e293b; 
+  font-weight: 700; 
+}
+
+.service-price { 
+  font-size: 20px; 
+  font-weight: 700; 
+  color: #135bec; 
+}
+
+.service-description { 
+  color: #64748b; 
+  font-size: 14px; 
+  margin-bottom: 16px; 
+  line-height: 1.5; 
+}
+
+.service-meta { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 12px; 
+  font-size: 13px; 
+  color: #475569; 
+  margin-bottom: 16px; 
+}
+
+/* 🔹 ИНФОРМАЦИЯ ОБ ИСПОЛНИТЕЛЕ */
+.worker-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.worker-name {
+  color: #475569;
+  font-size: 14px;
+}
+.worker-rating {
+  color: #f59e0b;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 🔹 ССЫЛКА НА ПРОФИЛЬ */
+.view-profile-link {
+  display: block;
+  padding: 10px 16px;
+  background: transparent;
+  border: 2px solid #667eea;
+  color: #667eea;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+.view-profile-link:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn { 
+  padding: 12px 24px; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  border: none; 
+  width: 100%; 
+  font-size: 14px; 
+  font-family: 'Manrope', sans-serif; 
+  transition: all 0.2s; 
+}
+
+.btn-primary { 
+  background: #135bec; 
+  color: white; 
+}
+
+.btn-primary:hover { 
+  background: #0d4bd6; 
+  transform: translateY(-2px); 
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #135bec;
+  color: #135bec;
+}
+
+.btn-outline:hover {
+  background: #135bec;
+  color: white;
+}
+
 .loading, .empty {
   text-align: center;
   padding: 60px 20px;
@@ -490,6 +662,21 @@ function onOrderCreated() {
   
   .services-section { 
     padding: 40px 20px; 
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .filters {
+    width: 100%;
+  }
+  
+  .filters select,
+  .filters input {
+    flex: 1;
   }
 }
 </style>

@@ -32,10 +32,11 @@
       </div>
       
       <div class="user-dropdown" :class="{ active: dropdownOpen }">
-        <a :href="profileLink" class="dropdown-item" @click="dropdownOpen = false">
+        <!-- 🔹 ИСПРАВЛЕНО: ссылка на профиль пользователя -->
+        <router-link to="/profile/me" class="dropdown-item" @click="dropdownOpen = false">
           <span class="dropdown-icon">👤</span>
           <span class="dropdown-text">Мой профиль</span>
-        </a>
+        </router-link>
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item logout" @click.prevent="handleLogout">
           <span class="dropdown-icon">🚪</span>
@@ -65,16 +66,6 @@ const userName = computed(() => {
   if (authStore.user?.name) return authStore.user.name
   if (authStore.user?.email) return authStore.user.email.split('@')[0]
   return 'Пользователь'
-})
-
-// Ссылка на профиль по роли
-const profileLink = computed(() => {
-  const routes = { 
-    admin: '/admin', 
-    customer: '/customer', 
-    worker: '/worker' 
-  }
-  return routes[authStore.user?.role] || '/'
 })
 
 // Переход на главную

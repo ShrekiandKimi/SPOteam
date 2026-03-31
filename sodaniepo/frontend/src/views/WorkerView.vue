@@ -20,6 +20,10 @@
             <div class="stat-number">{{ orders ? orders.filter(o => o.status === 'pending').length : 0 }}</div>
             <div class="stat-label">Новых заявок</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ orders ? orders.filter(o => o.status === 'completed').length : 0 }}</div>
+            <div class="stat-label">Завершённых</div>
+          </div>
         </div>
       </section>
       
@@ -57,13 +61,30 @@
                 {{ getStatusText(order.status) }}
               </span>
             </div>
+            
+            <!-- 🔹 КНОПКИ ДЛЯ РАЗНЫХ СТАТУСОВ -->
             <div v-if="order.status === 'pending'" class="order-actions">
               <button class="btn btn-success" @click="updateOrderStatus(order.id, 'accepted')">
-                Подтвердить
+                ✅ Подтвердить
               </button>
-              <button class="btn btn-outline" @click="updateOrderStatus(order.id, 'rejected')">
-                Отклонить
+              <button class="btn btn-danger" @click="updateOrderStatus(order.id, 'rejected')">
+                ❌ Отклонить
               </button>
+            </div>
+            
+            <!-- 🔹 НОВАЯ КНОПКА: ЗАВЕРШИТЬ ЗАКАЗ -->
+            <div v-if="order.status === 'accepted'" class="order-actions">
+              <button class="btn btn-primary" @click="completeOrder(order.id)">
+                🎉 Завершить заказ
+              </button>
+            </div>
+            
+            <div v-if="order.status === 'completed'" class="order-actions">
+              <span class="completed-text">✓ Заказ завершён</span>
+            </div>
+            
+            <div v-if="order.status === 'rejected'" class="order-actions">
+              <span class="rejected-text">✗ Отклонён</span>
             </div>
           </div>
         </div>
@@ -151,11 +172,10 @@ const userName = computed(() => {
   return 'Пользователь'
 })
 
-// 🔹 ИСПРАВЛЕНО: раскомментирован вызов fetchOrders()
 onMounted(async () => {
   console.log('🔍 WorkerView mounted')
   await fetchServices()
-  await fetchOrders()  // ✅ ТЕПЕРЬ ВЫЗЫВАЕТСЯ!
+  await fetchOrders()
 })
 
 async function fetchServices() {
@@ -178,19 +198,15 @@ async function fetchServices() {
   }
 }
 
-// 🔹 ДОБАВЛЕНЫ ЛОГИ ДЛЯ ОТЛАДКИ
 async function fetchOrders() {
   console.log('🔍 fetchOrders called')
   loadingOrders.value = true
   try {
     const token = localStorage.getItem('accessToken')
-    console.log('🔍 Token exists:', !!token)
-    
     const response = await api.get('/api/get-worker-orders', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     console.log('🔍 Response:', response.data)
-    
     if (response.data && response.data.success) {
       orders.value = response.data.orders || []
       console.log('✅ Загружено заказов:', orders.value.length)
@@ -198,7 +214,7 @@ async function fetchOrders() {
       orders.value = []
     }
   } catch (error) {
-    console.error('❌ Ошибка загрузки заказов:', error)
+    console.error('Ошибка загрузки заказов:', error)
     orders.value = []
   } finally {
     loadingOrders.value = false
@@ -229,7 +245,8 @@ function getStatusClass(status) {
     pending: 'status-pending',
     accepted: 'status-accepted',
     rejected: 'status-rejected',
-    completed: 'status-completed'
+    completed: 'status-completed',
+    cancelled: 'status-cancelled'
   }
   return classes[status] || ''
 }
@@ -237,14 +254,22 @@ function getStatusClass(status) {
 function getStatusText(status) {
   const texts = {
     pending: 'Ожидает подтверждения',
-    accepted: 'Подтверждён',
+    accepted: 'В работе',
     rejected: 'Отклонён',
-    completed: 'Выполнен'
+    completed: 'Выполнен',
+    cancelled: 'Отменён'
   }
   return texts[status] || status
 }
 
+// 🔹 СУЩЕСТВУЮЩАЯ ФУНКЦИЯ (поддерживает все статусы)
 async function updateOrderStatus(orderId, status) {
+  if (status === 'completed') {
+    if (!confirm('Заказ будет помечен как завершённый. Клиент сможет оставить отзыв. Продолжить?')) {
+      return
+    }
+  }
+  
   try {
     const token = localStorage.getItem('accessToken')
     const response = await api.post('/api/worker-update-order-status', {
@@ -254,7 +279,9 @@ async function updateOrderStatus(orderId, status) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert(status === 'accepted' ? 'Заказ подтверждён' : 'Заказ отклонён')
+      alert(status === 'accepted' ? '✅ Заказ подтверждён' : 
+            status === 'rejected' ? '❌ Заказ отклонён' : 
+            status === 'completed' ? '🎉 Заказ завершён!' : 'Статус обновлён')
       await fetchOrders()
     } else {
       alert('Ошибка обновления статуса')
@@ -263,6 +290,11 @@ async function updateOrderStatus(orderId, status) {
     alert('Ошибка подключения к серверу')
     console.error(error)
   }
+}
+
+// 🔹 НОВАЯ ФУНКЦИЯ ДЛЯ ЗАВЕРШЕНИЯ
+async function completeOrder(orderId) {
+  await updateOrderStatus(orderId, 'completed')
 }
 
 function editService(service) {
@@ -326,10 +358,13 @@ async function deleteService(serviceId) {
 .order-status { margin-bottom: 12px; }
 .status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; }
 .status-pending { background: #fef3c7; color: #92400e; }
-.status-accepted { background: #d1fae5; color: #065f46; }
+.status-accepted { background: #dbeafe; color: #1e40af; }
 .status-rejected { background: #fee2e2; color: #991b1b; }
-.status-completed { background: #dbeafe; color: #1e40af; }
-.order-actions { display: flex; gap: 12px; }
+.status-completed { background: #d1fae5; color: #065f46; }
+.status-cancelled { background: #e2e8f0; color: #475569; }
+.order-actions { display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
+.completed-text { color: #059669; font-weight: 600; }
+.rejected-text { color: #dc2626; font-weight: 600; }
 .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 .service-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; }
 .service-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }

@@ -71,7 +71,7 @@ const loading = ref(false)
 const form = reactive({
   name: '',
   email: '',
-  phone: '',  // 🔹 Добавили телефон
+  phone: '',
   password: '',
   passwordConfirm: '',
   role: ''
