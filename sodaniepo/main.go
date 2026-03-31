@@ -388,8 +388,7 @@ func validateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// 🔹 НОВЫЕ ХЕНДЛЕРЫ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ
-
+// 🔹 ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
 func getProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
@@ -574,7 +573,172 @@ func deleteAccountHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Аккаунт удалён"})
 }
 
-// 🔹 КОНЕЦ НОВЫХ ХЕНДЛЕРОВ
+// 🔹 АДМИНКА — НОВЫЕ ХЕНДЛЕРЫ
+
+func getAllUsersHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	if err != nil || !token.Valid || claims.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Требуется роль админа"})
+		return
+	}
+
+	rows, err := db.Query(`
+		SELECT id, name, email, COALESCE(phone, ''), role, created_at 
+		FROM users 
+		ORDER BY created_at DESC
+	`)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Ошибка БД"})
+		return
+	}
+	defer rows.Close()
+
+	var users []map[string]interface{}
+	for rows.Next() {
+		var id int
+		var name, email, phone, role string
+		var createdAt time.Time
+		
+		rows.Scan(&id, &name, &email, &phone, &role, &createdAt)
+		
+		users = append(users, map[string]interface{}{
+			"id":         id,
+			"name":       name,
+			"email":      email,
+			"phone":      phone,
+			"role":       role,
+			"created_at": createdAt,
+		})
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "users": users})
+}
+
+func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	if err != nil || !token.Valid || claims.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Требуется роль админа"})
+		return
+	}
+
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Неверный ID"})
+		return
+	}
+
+	if userID == claims.UserID {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Нельзя удалить себя"})
+		return
+	}
+
+	_, err = db.Exec("DELETE FROM users WHERE id = $1", userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Ошибка удаления"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Пользователь удалён"})
+}
+
+func getPlatformStatsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	if err != nil || !token.Valid || claims.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Требуется роль админа"})
+		return
+	}
+
+	var totalUsers, totalCustomers, totalWorkers, totalServices, totalOrders, totalReviews int
+	var totalRevenue float64
+
+	db.QueryRow("SELECT COUNT(*) FROM users").Scan(&totalUsers)
+	db.QueryRow("SELECT COUNT(*) FROM users WHERE role = 'customer'").Scan(&totalCustomers)
+	db.QueryRow("SELECT COUNT(*) FROM users WHERE role = 'worker'").Scan(&totalWorkers)
+	db.QueryRow("SELECT COUNT(*) FROM services").Scan(&totalServices)
+	db.QueryRow("SELECT COUNT(*) FROM orders").Scan(&totalOrders)
+	db.QueryRow("SELECT COUNT(*) FROM reviews").Scan(&totalReviews)
+	db.QueryRow("SELECT COALESCE(SUM(price), 0) FROM orders WHERE status = 'completed'").Scan(&totalRevenue)
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"stats": map[string]interface{}{
+			"total_users":     totalUsers,
+			"total_customers": totalCustomers,
+			"total_workers":   totalWorkers,
+			"total_services":  totalServices,
+			"total_orders":    totalOrders,
+			"total_reviews":   totalReviews,
+			"total_revenue":   totalRevenue,
+		},
+	})
+}
+
+func adminUpdateOrderStatusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
+	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	if err != nil || !token.Valid || claims.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Требуется роль админа"})
+		return
+	}
+
+	var req struct {
+		OrderID int    `json:"order_id"`
+		Status  string `json:"status"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Неверный формат данных"})
+		return
+	}
+
+	_, err = db.Exec(`
+		UPDATE orders 
+		SET status = $1, updated_at = CURRENT_TIMESTAMP 
+		WHERE id = $2
+	`, req.Status, req.OrderID)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Ошибка обновления"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Статус обновлён"})
+}
+
+// 🔹 КОНЕЦ АДМИН ХЕНДЛЕРОВ
 
 func createServiceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -987,7 +1151,7 @@ func getCustomerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil || !token.Valid || claims.Role != "customer" {
 		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Требуется роль клиента"})
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Требуется роль клиента"})
 		return
 	}
 
@@ -1220,11 +1384,17 @@ func main() {
 	r.HandleFunc("/api/login", loginHandler).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/validate-token", validateTokenHandler).Methods("POST", "OPTIONS")
 	
-	// 🔹 ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ (НОВОЕ)
+	// 🔹 ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
 	r.HandleFunc("/api/get-profile", getProfileHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc("/api/update-profile", updateProfileHandler).Methods("PUT", "POST", "OPTIONS")
 	r.HandleFunc("/api/change-password", changePasswordHandler).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/delete-account", deleteAccountHandler).Methods("DELETE", "OPTIONS")
+	
+	// 🔹 АДМИНКА
+	r.HandleFunc("/api/get-all-users", getAllUsersHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/delete-user/{id}", deleteUserHandler).Methods("DELETE", "OPTIONS")
+	r.HandleFunc("/api/get-platform-stats", getPlatformStatsHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/admin-update-order-status", adminUpdateOrderStatusHandler).Methods("POST", "OPTIONS")
 	
 	// 🔹 УСЛУГИ
 	r.HandleFunc("/api/create-service", createServiceHandler).Methods("POST", "OPTIONS")

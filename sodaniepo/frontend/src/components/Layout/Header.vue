@@ -32,11 +32,16 @@
       </div>
       
       <div class="user-dropdown" :class="{ active: dropdownOpen }">
-        <!-- 🔹 ИСПРАВЛЕНО: ссылка на профиль пользователя -->
-        <router-link to="/profile/me" class="dropdown-item" @click="dropdownOpen = false">
+        <!-- 🔹 ССЫЛКА ПО РОЛИ (но везде одинаковый текст) -->
+        <router-link 
+          :to="profileLink"
+          class="dropdown-item"
+          @click="dropdownOpen = false"
+        >
           <span class="dropdown-icon">👤</span>
           <span class="dropdown-text">Мой профиль</span>
         </router-link>
+        
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item logout" @click.prevent="handleLogout">
           <span class="dropdown-icon">🚪</span>
@@ -66,6 +71,16 @@ const userName = computed(() => {
   if (authStore.user?.name) return authStore.user.name
   if (authStore.user?.email) return authStore.user.email.split('@')[0]
   return 'Пользователь'
+})
+
+// 🔹 ССЫЛКА ПО РОЛИ
+const profileLink = computed(() => {
+  const roleLinks = {
+    admin: '/admin',
+    worker: '/worker',
+    customer: '/customer'
+  }
+  return roleLinks[authStore.user?.role] || '/'
 })
 
 // Переход на главную

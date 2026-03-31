@@ -115,7 +115,6 @@
       </div>
       
       <div v-else class="services-grid">
-        <!-- 🔹 КАРТОЧКА УСЛУГИ — ВНУТРИ HOMVIEW -->
         <div v-for="service in filteredServices" :key="service.id" class="service-card">
           <div class="service-header">
             <h3>{{ service.title }}</h3>
@@ -146,21 +145,33 @@
             👁️ Посмотреть профиль и отзывы
           </router-link>
           
-          <!-- Кнопка заказать -->
-          <button 
-            v-if="authStore.isAuthenticated && authStore.user?.role === 'customer'"
-            class="btn btn-primary"
-            @click="openServiceModal(service)"
-          >
-            Заказать
-          </button>
-          <button 
-            v-else
-            class="btn btn-outline"
-            @click="showLogin = true"
-          >
-            Войти для заказа
-          </button>
+          <!-- 🔹 КНОПКИ В ЗАВИСИМОСТИ ОТ РОЛИ -->
+          <div class="service-actions">
+            <!-- Если пользователь НЕ авторизован -->
+            <button 
+              v-if="!authStore.isAuthenticated"
+              class="btn btn-outline"
+              @click="showLogin = true"
+            >
+              🔐 Войти для заказа
+            </button>
+            
+            <!-- Если авторизован как ЗАКАЗЧИК -->
+            <button 
+              v-else-if="authStore.user?.role === 'customer'"
+              class="btn btn-primary"
+              @click="openServiceModal(service)"
+            >
+              🛒 Заказать
+            </button>
+            
+            <!-- Если авторизован как АДМИН или ИСПОЛНИТЕЛЬ -->
+            <div v-else class="role-info">
+              <span class="role-badge-admin">
+                👤 {{ authStore.user?.role === 'admin' ? 'Администратор' : 'Исполнитель' }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -492,6 +503,8 @@ function getCategoryName(category) {
   justify-content: space-between; 
   align-items: center; 
   margin-bottom: 32px; 
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .section-header h3 { 
@@ -518,13 +531,15 @@ function getCategoryName(category) {
   gap: 24px; 
 }
 
-/* 🔹 СТИЛИ КАРТОЧКИ УСЛУГИ */
+/* 🔹 КАРТОЧКА УСЛУГИ */
 .service-card { 
   background: white; 
   border-radius: 12px; 
   padding: 24px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
   transition: all 0.3s; 
+  display: flex;
+  flex-direction: column;
 }
 
 .service-card:hover { 
@@ -556,6 +571,7 @@ function getCategoryName(category) {
   font-size: 14px; 
   margin-bottom: 16px; 
   line-height: 1.5; 
+  flex: 1;
 }
 
 .service-meta { 
@@ -607,6 +623,11 @@ function getCategoryName(category) {
   transform: translateY(-2px);
 }
 
+/* 🔹 КНОПКИ ДЕЙСТВИЙ */
+.service-actions {
+  margin-top: auto;
+}
+
 .btn { 
   padding: 12px 24px; 
   border-radius: 8px; 
@@ -640,6 +661,22 @@ function getCategoryName(category) {
   color: white;
 }
 
+/* 🔹 ИНФО ДЛЯ АДМИНА/ИСПОЛНИТЕЛЯ */
+.role-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.role-badge-admin {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 2px solid #e2e8f0;
+}
+
 .loading, .empty {
   text-align: center;
   padding: 60px 20px;
@@ -666,7 +703,6 @@ function getCategoryName(category) {
   
   .section-header {
     flex-direction: column;
-    gap: 16px;
     align-items: flex-start;
   }
   

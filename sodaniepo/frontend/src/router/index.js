@@ -4,7 +4,7 @@ import WorkerView from '@/views/WorkerView.vue'
 import CustomerView from '@/views/CustomerView.vue'
 import AdminView from '@/views/AdminView.vue'
 import WorkerProfile from '@/views/WorkerProfile.vue'
-import UserProfile from '@/views/UserProfile.vue'  // ← 1. ИМПОРТ
+import UserProfile from '@/views/UserProfile.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },
@@ -12,7 +12,7 @@ const routes = [
   { path: '/customer', name: 'Customer', component: CustomerView },
   { path: '/admin', name: 'Admin', component: AdminView },
   { path: '/profile/:id', name: 'WorkerProfile', component: WorkerProfile },
-  { path: '/profile/me', name: 'UserProfile', component: UserProfile },  // ← 2. МАРШРУТ
+  { path: '/profile/me', name: 'UserProfile', component: UserProfile },
 ]
 
 const router = createRouter({
