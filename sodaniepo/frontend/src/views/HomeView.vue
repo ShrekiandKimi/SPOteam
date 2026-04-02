@@ -27,7 +27,7 @@
     <section class="about-section" id="about">
       <div class="about-container">
         <div class="about-header">
-          <h2>О компании Staff Tracking</h2>
+          <h2>О компании "Строительные технологии"</h2>
           <p>Профессиональные решения для вашего дома: находим лучших мастеров для воплощения ваших идей</p>
         </div>
         <div class="about-stats">
@@ -55,7 +55,7 @@
         <div class="about-content">
           <div class="about-text">
             <h3>Почему выбирают нас?</h3>
-            <p>Staff Tracking — это современная платформа для поиска квалифицированных специалистов в сфере строительства, ремонта и благоустройства.</p>
+            <p>Строительные технологии — это современная платформа для поиска квалифицированных специалистов в сфере строительства, ремонта и благоустройства.</p>
             <div class="about-features">
               <div class="feature-item">
                 <span class="feature-icon">✓</span>

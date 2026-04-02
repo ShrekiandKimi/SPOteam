@@ -137,7 +137,7 @@ var (
 )
 
 func initDB() error {
-	connStr := "host=localhost port=5432 user=postgres password=Diegobrando8 dbname=staff_tracking sslmode=disable"
+	connStr := "host=localhost port=5432 user=postgres password=1488 dbname=staff_tracking sslmode=disable"
 	
 	fmt.Println("Подключение к PostgreSQL...")
 	var err error

@@ -3,7 +3,7 @@
     <div class="footer-container">
       <div class="footer-content">
         <div class="footer-section">
-          <h3>Staff Tracking</h3>
+          <h3>Строительные технологии</h3>
           <p>Находим лучших специалистов для реализации ваших проектов. Качество, надежность и профессионализм — наши главные принципы.</p>
           <div class="social-links">
             <a href="https://vk.com" target="_blank" class="social-link" title="ВКонтакте">
@@ -50,7 +50,7 @@
       </div>
       
       <div class="footer-bottom">
-        <p>&copy; {{ currentYear }} Staff Tracking. Все права защищены.</p>
+        <p>&copy; {{ currentYear }} Строительные технологии. Все права защищены.</p>
       </div>
     </div>
   </footer>

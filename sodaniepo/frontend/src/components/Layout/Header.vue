@@ -2,7 +2,7 @@
   <header class="header">
     <div class="logo" @click="goHome" style="cursor: pointer;">
       <span class="material-symbols-outlined">engineering</span>
-      <h1>Staff Tracking</h1>
+      <h1>Строительные технологии</h1>
     </div>
     
     <!-- Навигация на главной странице -->
