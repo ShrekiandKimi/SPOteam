@@ -227,14 +227,24 @@ const filters = ref({
 
 const filteredServices = computed(() => {
   let result = services.value || []
-  
+
+  // 🔹 ДОБАВЛЕНО: Фильтрация по поисковому запросу
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(s =>
+      s.title.toLowerCase().includes(query) ||
+      s.description.toLowerCase().includes(query)
+    )
+  }
+
+  // Существующие фильтры (категория, цена)
   if (filters.value.category) {
     result = result.filter(s => s.category === filters.value.category)
   }
   if (filters.value.maxPrice) {
     result = result.filter(s => s.price <= filters.value.maxPrice)
   }
-  
+
   return result
 })
 

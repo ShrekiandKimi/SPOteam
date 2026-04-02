@@ -24,7 +24,7 @@
             <li><a href="#services">Услуги</a></li>
             <li><a href="#about">О нас</a></li>
             <li><a href="#contacts">Контакты</a></li>
-            <li><a href="#">Политика конфиденциальности</a></li>
+            <li><router-link to="/privacy">Политика конфиденциальности</router-link></li>
           </ul>
         </div>
         

@@ -96,6 +96,24 @@ function showLogin() {
 }
 
 async function handleSubmit() {
+  // 🔹 1. Проверка имени (не пустое)
+  if (!form.name.trim()) {
+    alert('Пожалуйста, введите ваше имя')
+    return
+  }
+
+  // 🔹 2. Проверка телефона (заполнено и только цифры)
+  const phoneValue = form.phone.trim()
+  if (!phoneValue) {
+    alert('Пожалуйста, введите номер телефона')
+    return
+  }
+  if (!/^\d+$/.test(phoneValue)) {
+    alert('Номер телефона должен содержать только цифры')
+    return
+  }
+
+  // 🔹 Существующие проверки пароля
   if (form.password !== form.passwordConfirm) {
     alert('Пароли не совпадают')
     return
@@ -106,12 +124,13 @@ async function handleSubmit() {
     return
   }
   
+  // 🔹 Отправка на сервер (код ниже остаётся без изменений)
   loading.value = true
   try {
     const response = await api.post('/api/register', {
       name: form.name,
       email: form.email,
-      phone: form.phone,  // 🔹 Отправляем телефон
+      phone: form.phone,
       password: form.password,
       role: form.role
     })
