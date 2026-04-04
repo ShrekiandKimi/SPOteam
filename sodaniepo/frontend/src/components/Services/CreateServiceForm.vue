@@ -114,15 +114,15 @@ async function handleSubmit() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data.success) {
-      alert('Услуга добавлена!')
+      
       emit('created')
       closeModal()
     } else {
-      alert('Ошибка: ' + response.data.message)
+    
     }
   } catch (error) {
     console.error(error)
-    alert('Ошибка подключения к серверу')
+   
   } finally {
     loading.value = false
   }

@@ -173,7 +173,7 @@ const userName = computed(() => {
 })
 
 onMounted(async () => {
-  console.log('🔍 WorkerView mounted')
+ 
   await fetchServices()
   await fetchOrders()
 })
@@ -199,17 +199,17 @@ async function fetchServices() {
 }
 
 async function fetchOrders() {
-  console.log('🔍 fetchOrders called')
+ 
   loadingOrders.value = true
   try {
     const token = localStorage.getItem('accessToken')
     const response = await api.get('/api/get-worker-orders', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    console.log('🔍 Response:', response.data)
+
     if (response.data && response.data.success) {
       orders.value = response.data.orders || []
-      console.log('✅ Загружено заказов:', orders.value.length)
+      
     } else {
       orders.value = []
     }
@@ -279,15 +279,13 @@ async function updateOrderStatus(orderId, status) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert(status === 'accepted' ? '✅ Заказ подтверждён' : 
-            status === 'rejected' ? '❌ Заказ отклонён' : 
-            status === 'completed' ? '🎉 Заказ завершён!' : 'Статус обновлён')
+    
       await fetchOrders()
     } else {
-      alert('Ошибка обновления статуса')
+    
     }
   } catch (error) {
-    alert('Ошибка подключения к серверу')
+    
     console.error(error)
   }
 }
@@ -321,13 +319,13 @@ async function deleteService(serviceId) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('Услуга удалена')
+      
       await fetchServices()
     } else {
-      alert('Ошибка удаления услуги')
+      
     }
   } catch (error) {
-    alert('Ошибка подключения к серверу')
+  
     console.error(error)
   }
 }

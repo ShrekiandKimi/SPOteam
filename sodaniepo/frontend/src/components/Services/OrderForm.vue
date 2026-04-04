@@ -98,7 +98,7 @@ async function handleSubmit() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('✅ Заказ создан! Исполнитель свяжется с вами.')
+      
       emit('created')
       closeModal()
     } else {
@@ -106,9 +106,9 @@ async function handleSubmit() {
       
       // 🔹 Специальное сообщение для повторного заказа
       if (errorMsg.includes('уже заказывали')) {
-        alert('⚠️ Вы уже заказывали эту услугу ранее.\n\nПовторный заказ одной и той же услуги невозможен.')
+        
       } else {
-        alert('❌ ' + errorMsg)
+     
       }
     }
   } catch (error) {
@@ -116,11 +116,11 @@ async function handleSubmit() {
     
     // 🔹 Обрабатываем ошибку 409 Conflict (повторный заказ)
     if (error.response?.status === 409) {
-      alert('⚠️ Вы уже заказывали эту услугу ранее.\n\nПовторный заказ одной и той же услуги невозможен.')
+      
     } else if (error.response?.data?.message) {
-      alert('❌ ' + error.response.data.message)
+      
     } else {
-      alert('❌ Ошибка подключения к серверу')
+     
     }
   } finally {
     loading.value = false

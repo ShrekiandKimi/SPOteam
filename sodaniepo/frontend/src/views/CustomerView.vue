@@ -259,13 +259,13 @@ async function cancelOrder(orderId) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('Заказ отменён')
+      
       await fetchOrders()
     } else {
-      alert('Ошибка отмены заказа')
+    
     }
   } catch (error) {
-    alert('Ошибка подключения к серверу')
+   
     console.error(error)
   }
 }

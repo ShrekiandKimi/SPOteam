@@ -88,17 +88,17 @@ function getCategoryName(category) {
 
 function handleOrder() {
   if (isAlreadyOrdered.value) {
-    alert('⚠️ Вы уже заказывали эту услугу')
+    
     return
   }
   
   if (!authStore.isAuthenticated) {
-    alert('Войдите чтобы заказать услугу')
+    
     router.push('/')
     return
   }
   if (authStore.user?.role !== 'customer') {
-    alert('Только клиенты могут заказывать услуги')
+   
     return
   }
   

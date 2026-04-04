@@ -142,11 +142,11 @@ function handleContact() {
 
 function handleOrder() {
   if (!authStore.isAuthenticated) {
-    alert('Для заказа услуги необходимо войти в систему!')
+    
     return
   }
   if (authStore.userRole !== 'customer') {
-    alert('Только клиенты могут заказывать услуги!')
+    
     return
   }
   emit('order', props.service)

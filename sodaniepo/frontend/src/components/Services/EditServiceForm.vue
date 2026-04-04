@@ -121,15 +121,15 @@ async function handleSubmit() {
     })
     
     if (response.data.success) {
-      alert('Услуга обновлена!')
+    
       emit('updated')
       closeModal()
     } else {
-      alert('Ошибка: ' + response.data.message)
+    
     }
   } catch (error) {
     console.error('Ошибка обновления услуги:', error)
-    alert('Ошибка подключения к серверу')
+  
   } finally {
     loading.value = false
   }

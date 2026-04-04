@@ -258,7 +258,7 @@ async function fetchServices() {
     const response = await api.get('/api/get-all-services')
     if (response.data && response.data.success) {
       services.value = response.data.services || []
-      console.log('Загружено услуг:', services.value.length)
+     
     } else {
       services.value = []
     }
@@ -271,24 +271,24 @@ async function fetchServices() {
 }
 
 function handleSearch() {
-  console.log('Поиск:', searchQuery.value)
+  
 }
 
 function applyFilters() {
-  console.log('Фильтры:', filters.value)
+  
 }
 
 function openServiceModal(service) {
   if (!authStore.isAuthenticated) {
-    alert('Войдите чтобы заказать услугу')
+    
     showLogin.value = true
     return
   }
   if (authStore.user?.role !== 'customer') {
-    alert('Только клиенты могут заказывать услуги')
+  
     return
   }
-  console.log('Открытие услуги:', service)
+  
   selectedService.value = service
   showOrderForm.value = true
 }

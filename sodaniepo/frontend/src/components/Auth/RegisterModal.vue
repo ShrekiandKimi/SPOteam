@@ -136,15 +136,15 @@ async function handleSubmit() {
     })
     
     if (response.data && response.data.success) {
-      alert('Регистрация успешна! Теперь войдите.')
+      
       emit('show-login')
       closeModal()
     } else {
-      alert('Ошибка: ' + response.data.error)
+      
     }
   } catch (error) {
     console.error(error)
-    alert('Ошибка подключения к серверу')
+    
   } finally {
     loading.value = false
   }

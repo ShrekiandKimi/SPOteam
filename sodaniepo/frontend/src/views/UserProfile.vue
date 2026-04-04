@@ -298,16 +298,16 @@ async function updateProfile() {
     })
     
     if (response.data && response.data.success) {
-      alert('✅ Профиль обновлён!')
+     
       await fetchProfile()
       // Обновить данные в authStore
       authStore.user.name = form.name
     } else {
-      alert('Ошибка: ' + (response.data?.error || 'Неизвестная ошибка'))
+      
     }
   } catch (error) {
     console.error('Ошибка обновления профиля:', error)
-    alert('Ошибка подключения к серверу')
+    
   } finally {
     saving.value = false
   }
@@ -315,12 +315,12 @@ async function updateProfile() {
 
 async function changePassword() {
   if (passwordForm.new !== passwordForm.confirm) {
-    alert('❌ Пароли не совпадают')
+    
     return
   }
   
   if (passwordForm.new.length < 6) {
-    alert('❌ Пароль должен быть не менее 6 символов')
+   
     return
   }
   
@@ -335,16 +335,16 @@ async function changePassword() {
     })
     
     if (response.data && response.data.success) {
-      alert('✅ Пароль изменён!')
+     
       passwordForm.current = ''
       passwordForm.new = ''
       passwordForm.confirm = ''
     } else {
-      alert('Ошибка: ' + (response.data?.error || 'Неверный текущий пароль'))
+      
     }
   } catch (error) {
     console.error('Ошибка смены пароля:', error)
-    alert('Ошибка: ' + (error.response?.data?.error || 'Неверный текущий пароль'))
+    
   } finally {
     savingPassword.value = false
   }
@@ -366,15 +366,15 @@ async function deleteAccount() {
     })
     
     if (response.data && response.data.success) {
-      alert('Аккаунт удалён')
+     
       authStore.logout()
       router.push('/')
     } else {
-      alert('Ошибка удаления аккаунта')
+   
     }
   } catch (error) {
     console.error('Ошибка удаления аккаунта:', error)
-    alert('Ошибка подключения к серверу')
+    
   }
 }
 

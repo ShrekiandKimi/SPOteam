@@ -73,7 +73,7 @@ function closeModal() {
 
 async function handleSubmit() {
   if (form.rating === 0) {
-    alert('Поставьте оценку')
+    
     return
   }
   
@@ -84,15 +84,15 @@ async function handleSubmit() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('Спасибо за отзыв!')
+     
       emit('created')
       closeModal()
     } else {
-      alert('Ошибка: ' + response.data.message)
+      
     }
   } catch (error) {
     console.error(error)
-    alert('Ошибка подключения к серверу')
+   
   } finally {
     loading.value = false
   }

@@ -334,7 +334,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := getUserByEmail(req.Email)
 	if err != nil {
-		fmt.Printf("Ошибка БД: %v\n", err)
+		
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(LoginResponse{Success: false, Message: "Ошибка сервера"})
 		return
@@ -912,7 +912,7 @@ func getWorkerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("🔍 getWorkerOrders: ищем заказы для worker_id=%d\n", claims.UserID)
+	
 
 	rows, err := db.Query(`
 		SELECT o.id, o.customer_id, o.service_title, o.service_description, o.price, o.status, o.created_at, 
@@ -922,7 +922,7 @@ func getWorkerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		ORDER BY o.created_at DESC
 	`, claims.UserID)
 	if err != nil {
-		fmt.Printf("❌ Ошибка загрузки заказов исполнителя: %v\n", err)
+		
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка БД: " + err.Error()})
 		return
@@ -937,7 +937,7 @@ func getWorkerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		orders = append(orders, o)
 	}
 	
-	fmt.Printf("✅ getWorkerOrders: найдено %d заказов\n", len(orders))
+	
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "orders": orders})
 }
 
@@ -1048,7 +1048,7 @@ func createOrderHandler(w http.ResponseWriter, r *http.Request) {
 	var workerID int
 	err = db.QueryRow("SELECT worker_id FROM services WHERE id = $1", req.ServiceID).Scan(&workerID)
 	if err != nil {
-		fmt.Printf("❌ Ошибка получения worker_id: %v\n", err)
+		
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Услуга не найдена"})
 		return
@@ -1066,7 +1066,7 @@ func createOrderHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("✅ Заказ создан: customer_id=%d, worker_id=%d, service_id=%d\n", claims.UserID, workerID, req.ServiceID)
+	
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Заказ создан"})
 }
 
@@ -1167,7 +1167,7 @@ func getCustomerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		ORDER BY o.created_at DESC
 	`, claims.UserID)
 	if err != nil {
-		fmt.Printf("❌ Ошибка загрузки заказов: %v\n", err)
+		
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "message": "Ошибка БД: " + err.Error()})
 		return
@@ -1184,7 +1184,7 @@ func getCustomerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&o.ID, &o.ServiceTitle, &o.ServiceDesc, &o.Price, &o.Status, &o.CreatedAt,
 		          &workerID, &workerName, &workerPhone, &workerTelegram, &hasReview)
 		if err != nil {
-			fmt.Printf("❌ Ошибка сканирования заказа: %v\n", err)
+			
 			continue
 		}
 		
@@ -1205,7 +1205,7 @@ func getCustomerOrdersHandler(w http.ResponseWriter, r *http.Request) {
 		orders = append(orders, o)
 	}
 	
-	fmt.Printf("✅ Загружено заказов для клиента: %d\n", len(orders))
+	
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "orders": orders})
 }
 

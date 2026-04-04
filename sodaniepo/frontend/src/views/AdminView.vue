@@ -304,14 +304,14 @@ async function deleteUser(userId) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('✅ Пользователь удалён')
+      
       await fetchUsers()
       await fetchStats()
     } else {
-      alert('❌ Ошибка: ' + (response.data?.error || 'Неизвестная ошибка'))
+     
     }
   } catch (error) {
-    alert('❌ Ошибка подключения к серверу')
+    
     console.error(error)
   }
 }
@@ -328,14 +328,14 @@ async function deleteService(serviceId) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('✅ Услуга удалена')
+    
       await fetchServices()
       await fetchStats()
     } else {
-      alert('❌ Ошибка: ' + (response.data?.message || 'Неизвестная ошибка'))
+      
     }
   } catch (error) {
-    alert('❌ Ошибка подключения к серверу')
+    
     console.error(error)
   }
 }
@@ -350,13 +350,13 @@ async function updateOrderStatus(orderId, status) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     if (response.data && response.data.success) {
-      alert('✅ Статус обновлён')
+      
       await fetchOrders()
     } else {
-      alert('❌ Ошибка обновления статуса')
+      
     }
   } catch (error) {
-    alert('❌ Ошибка подключения к серверу')
+   
     console.error(error)
   }
 }

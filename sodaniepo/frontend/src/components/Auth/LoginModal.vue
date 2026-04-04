@@ -65,7 +65,7 @@ async function handleLogin() {
       password: form.password
     })
     
-    console.log('🔹 Login response:', response.data)
+    
     
     if (response.data.success) {
       const user = {
@@ -83,21 +83,21 @@ async function handleLogin() {
         token: response.data.accessToken
       })
       
-      alert('✅ Вход успешен!')
+      
       closeModal()
       
       setTimeout(() => {
         window.location.reload()
       }, 100)
     } else {
-      alert('❌ ' + response.data.message)
+     
     }
   } catch (error) {
     console.error('Login error:', error)
     if (error.response) {
-      alert('❌ ' + (error.response.data.message || 'Ошибка входа'))
+  
     } else {
-      alert('❌ Ошибка подключения к серверу')
+     
     }
   } finally {
     loading.value = false

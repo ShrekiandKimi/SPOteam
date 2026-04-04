@@ -12,30 +12,7 @@ import { useRouter } from 'vue-router'
 const authStore = useAuthStore()
 const router = useRouter()
 
-// 🔹 Отладка при загрузке
-onMounted(() => {
-  console.log('🔹 ========== APP MOUNTED ==========')
-  console.log('🔹 Token from store:', authStore.token)
-  console.log('🔹 User from store:', authStore.user)
-  console.log('🔹 Is Authenticated:', authStore.isAuthenticated)
-  console.log('🔹 User Role:', authStore.userRole)
-  console.log('🔹 User Name:', authStore.userName)
-  console.log('🔹 Token from localStorage:', localStorage.getItem('accessToken'))
-  console.log('🔹 User from localStorage:', localStorage.getItem('user'))
-  console.log('🔹 Role from localStorage:', localStorage.getItem('role'))
-  console.log('🔹 ==================================')
-})
 
-// 🔹 Следим за изменениями auth
-watch(
-  () => authStore.isAuthenticated,
-  (newValue) => {
-    console.log('🔹 Auth changed:', newValue)
-    console.log('🔹 Current user:', authStore.user)
-    console.log('🔹 Current role:', authStore.userRole)
-  },
-  { immediate: true }
-)
 </script>
 
 <style>
