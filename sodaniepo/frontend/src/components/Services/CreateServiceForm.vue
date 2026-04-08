@@ -26,38 +26,39 @@
           <div class="form-row">
             <div class="form-group">
               <label>Цена (₽/час) *</label>
-              <input type="number" v-model.number="form.price" required min="100" placeholder="1000">
+              <input type="number" v-model.number="form.price" required min="100" placeholder="1000" @input="errors.description = ''">
             </div>
             <div class="form-group">
               <label>Опыт (лет)</label>
-              <input type="number" v-model.number="form.experience" min="0" placeholder="5">
+              <input type="number"required  v-model.number="form.experience" min="0" placeholder="5">
             </div>
           </div>
           
           <div class="form-group">
             <label>Ссылка на резюме:</label>
-            <textarea v-model="form.description" required rows="4" placeholder="Прикрепите ссылку на резюме:"></textarea>
+            <textarea v-model="form.description" required rows="4" placeholder="Прикрепите ссылку на резюме:" @input="errors.description = ''"
+            ></textarea>
           </div>
           
           <div class="form-row">
             <div class="form-group">
               <label>Гарантия (мес)</label>
-              <input type="number" v-model.number="form.guarantee" min="0" placeholder="12">
+              <input type="number" v-model.number="form.guarantee" min="0" placeholder="12" required >
             </div>
             <div class="form-group">
               <label>Срок выполнения</label>
-              <input type="text" v-model="form.completion_time" placeholder="1-3 дня">
+              <input type="text" v-model="form.completion_time" placeholder="1-3 дня" required>
             </div>
           </div>
           
           <div class="form-group">
             <label>Telegram</label>
-            <input type="text" v-model="form.telegram" placeholder="@username">
+            <input type="text" v-model="form.telegram" placeholder="@username" required >
           </div>
           
           <div class="form-group">
             <label>MAX</label>
-            <input type="text" v-model="form.max" placeholder="+7 (999) 000-00-00">
+            <input type="text" v-model="form.max" placeholder="88005553535" required>
           </div>
           <div class="form-group">
             <label>📝 О себе / Опыт работы по этой услуге</label>
@@ -85,6 +86,16 @@ const props = defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue', 'created'])
 
 const loading = ref(false)
+
+// 🔹 Ошибки валидации
+const errors = reactive({
+  title: '',
+  category: '',
+  price: '',
+  description: '',
+  max: ''
+})
+
 const form = reactive({
   title: '',
   category: '',
@@ -94,8 +105,7 @@ const form = reactive({
   guarantee: 0,
   completion_time: '',
   telegram: '',
-  max: '',
-  bio: ''
+  max: ''
 })
 
 function closeModal() {
@@ -104,41 +114,43 @@ function closeModal() {
 }
 
 function resetForm() {
-  form.title = ''
-  form.category = ''
-  form.price = null
-  form.experience = 0
-  form.description = ''
-  form.guarantee = 0
-  form.completion_time = ''
-  form.telegram = ''
-  form.max = ''
-  form.bio = ''
+  Object.assign(form, { 
+    title: '', category: '', price: null, experience: 0, description: '', 
+    guarantee: 0, completion_time: '', telegram: '', max: '' 
+  })
+  Object.keys(errors).forEach(k => errors[k] = '')
 }
 
 async function handleSubmit() {
+  // Сброс ошибок
+  Object.keys(errors).forEach(k => errors[k] = '')
+  let isValid = true
+
+  if (!form.title.trim()) { errors.title = 'Введите название услуги'; isValid = false }
+  if (!form.category) { errors.category = 'Выберите категорию'; isValid = false }
+  if (!form.price || form.price <= 0) { errors.price = 'Укажите корректную цену'; isValid = false }
+  if (!form.description.trim()) { errors.description = 'Добавьте описание услуги'; isValid = false }
+  if (!form.max.trim()) { errors.max = 'Укажите номер телефона для связи'; isValid = false }
+
+  if (!isValid) return // Блокируем отправку при ошибках
+
   loading.value = true
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await api.post('/api/create-service', form, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    const response = await api.post('/api/create-service', form)
     if (response.data.success) {
-      
       emit('created')
       closeModal()
     } else {
-    
+      alert('Ошибка: ' + response.data.message)
     }
   } catch (error) {
     console.error(error)
-   
+    alert('Ошибка подключения к серверу')
   } finally {
     loading.value = false
   }
 }
 </script>
-
 <style scoped>
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
