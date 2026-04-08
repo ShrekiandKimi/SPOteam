@@ -36,8 +36,12 @@
           
           <div class="form-group">
             <label>Ссылка на резюме:</label>
+<<<<<<< HEAD
             <textarea v-model="form.description" required rows="4" placeholder="Прикрепите ссылку на резюме:" @input="errors.description = ''"
             ></textarea>
+=======
+            <textarea v-model="form.description" required rows="4" placeholder="Прикрепите ссылку на резюме:"></textarea>
+>>>>>>> cc80adb (Все что говорил преподователь изменил, осталась маска для услуги)
           </div>
           
           <div class="form-row">
@@ -59,6 +63,14 @@
           <div class="form-group">
             <label>MAX</label>
             <input type="text" v-model="form.max" placeholder="88005553535" required>
+          </div>
+          <div class="form-group">
+            <label>📝 О себе / Опыт работы по этой услуге</label>
+            <textarea 
+              v-model="form.bio" 
+              rows="3" 
+              placeholder="Например: 5 лет опыта в плиточных работах, есть свой инструмент..."
+            ></textarea>
           </div>
           <div class="form-group">
             <label>📝 О себе / Опыт работы по этой услуге</label>
@@ -105,7 +117,8 @@ const form = reactive({
   guarantee: 0,
   completion_time: '',
   telegram: '',
-  max: ''
+  max: '',
+  bio: ''
 })
 
 function closeModal() {
@@ -114,11 +127,24 @@ function closeModal() {
 }
 
 function resetForm() {
+<<<<<<< HEAD
   Object.assign(form, { 
     title: '', category: '', price: null, experience: 0, description: '', 
     guarantee: 0, completion_time: '', telegram: '', max: '' 
   })
   Object.keys(errors).forEach(k => errors[k] = '')
+=======
+  form.title = ''
+  form.category = ''
+  form.price = null
+  form.experience = 0
+  form.description = ''
+  form.guarantee = 0
+  form.completion_time = ''
+  form.telegram = ''
+  form.max = ''
+  form.bio = ''
+>>>>>>> cc80adb (Все что говорил преподователь изменил, осталась маска для услуги)
 }
 
 async function handleSubmit() {
