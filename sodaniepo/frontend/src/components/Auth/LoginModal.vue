@@ -33,15 +33,14 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router' // 🔹 1. Импортируем роутер
 import { useAuthStore } from '@/stores/auth'
 import api from '@/api'
 
-const props = defineProps({
-  modelValue: Boolean
-})
-
+const props = defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue', 'show-register'])
 
+const router = useRouter() // 🔹 2. Инициализируем
 const authStore = useAuthStore()
 const loading = ref(false)
 
@@ -58,47 +57,40 @@ function closeModal() {
 
 async function handleLogin() {
   loading.value = true
-  
   try {
     const response = await api.post('/api/login', {
       email: form.email,
       password: form.password
     })
-    
-    
-    
+
     if (response.data.success) {
+      // Сохраняем данные
       const user = {
         email: form.email,
         role: response.data.role,
         name: form.email.split('@')[0]
       }
-      
       localStorage.setItem('accessToken', response.data.accessToken)
       localStorage.setItem('user', JSON.stringify(user))
       localStorage.setItem('role', response.data.role)
-      
-      authStore.$patch({
-        user: user,
-        token: response.data.accessToken
-      })
-      
-      
+      authStore.$patch({ user: user, token: response.data.accessToken })
+
       closeModal()
+
+      // 🔹 3. Редирект в зависимости от роли
+      const roleRoutes = {
+        worker: '/worker',
+        customer: '/customer',
+        admin: '/admin'
+      }
+      router.push(roleRoutes[response.data.role] || '/')
       
-      setTimeout(() => {
-        window.location.reload()
-      }, 100)
     } else {
-     
+      alert('❌ ' + (response.data.message || 'Ошибка входа'))
     }
   } catch (error) {
     console.error('Login error:', error)
-    if (error.response) {
-  
-    } else {
-     
-    }
+    alert('❌ Ошибка подключения к серверу')
   } finally {
     loading.value = false
   }

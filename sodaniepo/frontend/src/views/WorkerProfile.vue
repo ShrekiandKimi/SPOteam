@@ -25,6 +25,9 @@
               ✈ {{ workerTelegram }}
             </a>
           </div>
+          <div v-if="workerBio" class="worker-bio">
+            <p>{{ workerBio }}</p>
+          </div>
         </div>
       </div>
       
@@ -117,9 +120,11 @@ import RegisterModal from '@/components/Auth/RegisterModal.vue'
 const route = useRoute()
 const workerId = computed(() => parseInt(route.params.id))
 
-const workerName = ref('')
+// 🔹 ИСПРАВЛЕНО: объявлены все переменные профиля
+const workerName = ref('Исполнитель')
 const workerPhone = ref('')
-const workerTelegram = ref('')
+const workerBio = ref('') // 🔹 ДОБАВЛЕНО
+
 const services = ref([])
 const reviews = ref([])
 const loadingServices = ref(true)
@@ -133,39 +138,33 @@ const averageRating = computed(() => {
   return sum / reviews.value.length
 })
 
+// 🔹 ИСПРАВЛЕНО: правильный эндпоинт и парсинг ответа
+async function fetchWorkerPublicInfo() {
+  try {
+    const response = await api.get(`/api/get-public-profile/${workerId.value}`)
+    if (response.data?.success && response.data.worker) {
+      const w = response.data.worker
+      workerName.value = w.name || 'Исполнитель'
+      workerPhone.value = w.phone || ''
+      workerBio.value = w.bio || '' // 🔹 ТЕПЕРЬ БЕРЁМ BIO ИЗ ПРАВИЛЬНОГО ОБЪЕКТА
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки публичного профиля:', error)
+  }
+}
+
 onMounted(async () => {
-  await fetchWorkerInfo()
+  await fetchWorkerPublicInfo() // 🔹 ЗАГРУЖАЕМ ПРОФИЛЬ ПЕРВЫМ
   await fetchServices()
   await fetchReviews()
 })
 
-async function fetchWorkerInfo() {
-  try {
-    const token = localStorage.getItem('accessToken')
-    const response = await api.get(`/api/get-worker-reviews/${workerId.value}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    if (response.data && response.data.reviews && response.data.reviews.length > 0) {
-      // Получаем имя из первого отзыва
-      workerName.value = response.data.reviews[0].worker_name || 'Исполнитель'
-    }
-  } catch (error) {
-    console.error('Ошибка загрузки информации:', error)
-  }
-}
-
 async function fetchServices() {
   loadingServices.value = true
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await api.get('/api/get-worker-services', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    if (response.data && response.data.success) {
-      services.value = response.data.services || []
-      if (services.value.length > 0) {
-        workerName.value = services.value[0].worker_name || 'Исполнитель'
-      }
+    const response = await api.get('/api/get-all-services')
+    if (response.data?.success) {
+      services.value = response.data.services.filter(s => s.worker_id === workerId.value) || []
     }
   } catch (error) {
     console.error('Ошибка загрузки услуг:', error)
@@ -177,11 +176,8 @@ async function fetchServices() {
 async function fetchReviews() {
   loadingReviews.value = true
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await api.get(`/api/get-worker-reviews/${workerId.value}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    if (response.data && response.data.success) {
+    const response = await api.get(`/api/get-worker-reviews/${workerId.value}`)
+    if (response.data?.success) {
       reviews.value = response.data.reviews || []
     }
   } catch (error) {
@@ -192,22 +188,13 @@ async function fetchReviews() {
 }
 
 function getCategoryName(category) {
-  const names = {
-    construction: 'Строительство',
-    repair: 'Ремонт',
-    electrical: 'Электрика',
-    plumbing: 'Сантехника'
-  }
+  const names = { construction: 'Строительство', repair: 'Ремонт', electrical: 'Электрика', plumbing: 'Сантехника' }
   return names[category] || category
 }
 
 function formatDate(date) {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  })
+  return new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 </script>
 
@@ -215,7 +202,25 @@ function formatDate(date) {
 .worker-profile { min-height: 100vh; background: #f5f5f5; }
 .profile-container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
 
+
+
+
+
+.worker-bio {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  color: #475569;
+  line-height: 1.6;
+  font-size: 14px;
+  white-space: pre-wrap; /* Сохраняет переносы строк из textarea */
+}
+
+
 /* 🔹 ЗАГОЛОВОК */
+
+
 .profile-header {
   background: white;
   border-radius: 12px;

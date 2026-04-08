@@ -32,6 +32,7 @@ type User struct {
 	Name     string
 	Phone    string
 	Address  string
+	Bio string
 }
 
 type LoginRequest struct {
@@ -64,6 +65,7 @@ type CreateServiceRequest struct {
 	CompletionTime string  `json:"completion_time"`
 	Telegram       string  `json:"telegram"`
 	Max            string  `json:"max"`
+	Bio            string   `json:"bio"`
 }
 
 type Service struct {
@@ -80,6 +82,7 @@ type Service struct {
 	Telegram       string    `json:"telegram"`
 	Max            string    `json:"max"`
 	Rating         float64   `json:"rating"`
+	Bio            string    `json:"bio"`
 	ReviewCount    int       `json:"review_count"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -389,9 +392,9 @@ func validateTokenHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // 🔹 ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
+
 func getProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
 	tokenString := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
@@ -405,9 +408,9 @@ func getProfileHandler(w http.ResponseWriter, r *http.Request) {
 
 	user := &User{}
 	err = db.QueryRow(
-		"SELECT id, name, email, COALESCE(phone, ''), COALESCE(address, ''), role FROM users WHERE id = $1",
+		"SELECT id, name, email, COALESCE(phone, ''), COALESCE(address, ''), COALESCE(bio, ''), role FROM users WHERE id = $1",
 		claims.UserID,
-	).Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.Address, &user.Role)
+	).Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.Address, &user.Bio, &user.Role)
 
 	if err == sql.ErrNoRows {
 		w.WriteHeader(http.StatusNotFound)
@@ -420,6 +423,7 @@ func getProfileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 🔹 ВОТ ЗДЕСЬ ДОБАВЛЯЕТСЯ bio В JSON-ОТВЕТ
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"user": map[string]interface{}{
@@ -428,11 +432,11 @@ func getProfileHandler(w http.ResponseWriter, r *http.Request) {
 			"email":   user.Email,
 			"phone":   user.Phone,
 			"address": user.Address,
+			"bio":     user.Bio,  // <-- ЭТА СТРОКА
 			"role":    user.Role,
 		},
 	})
 }
-
 func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
@@ -457,6 +461,7 @@ func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
 		Name    string `json:"name"`
 		Phone   string `json:"phone"`
 		Address string `json:"address"`
+		Bio     string `json:"bio"` 
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -471,10 +476,10 @@ func updateProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = db.Exec(`
-		UPDATE users 
-		SET name = $1, phone = $2, address = $3, updated_at = CURRENT_TIMESTAMP 
-		WHERE id = $4
-	`, req.Name, req.Phone, req.Address, claims.UserID)
+	UPDATE users 
+	SET name = $1, phone = $2, address = $3, bio = $4, updated_at = CURRENT_TIMESTAMP 
+	WHERE id = $5
+	`, req.Name, req.Phone, req.Address, req.Bio, claims.UserID)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -768,9 +773,9 @@ func createServiceHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.Exec(`
 		INSERT INTO services 
-		(worker_id, title, price, category, description, experience, guarantee, completion_time, telegram, max, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-	`, claims.UserID, req.Title, req.Price, req.Category, req.Description, req.Experience, req.Guarantee, req.CompletionTime, req.Telegram, req.Max, time.Now(), time.Now())
+		(worker_id, title, price, category, description, experience, guarantee, completion_time, telegram, max, bio, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+	`, claims.UserID, req.Title, req.Price, req.Category, req.Description, req.Experience, req.Guarantee, req.CompletionTime, req.Telegram, req.Max, req.Bio, time.Now(), time.Now())
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -820,10 +825,10 @@ func updateServiceHandler(w http.ResponseWriter, r *http.Request) {
 		UPDATE services 
 		SET title = $1, price = $2, category = $3, description = $4, 
 		    experience = $5, guarantee = $6, completion_time = $7, 
-		    telegram = $8, max = $9, updated_at = CURRENT_TIMESTAMP
-		WHERE id = $10 AND worker_id = $11
+		    telegram = $8, max = $9, bio = $10, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $11 AND worker_id = $12
 	`, req.Title, req.Price, req.Category, req.Description, req.Experience, 
-	   req.Guarantee, req.CompletionTime, req.Telegram, req.Max, serviceID, claims.UserID)
+	   req.Guarantee, req.CompletionTime, req.Telegram, req.Max, req.Bio, serviceID, claims.UserID)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -848,7 +853,7 @@ func getWorkerServicesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rows, err := db.Query(`
-		SELECT id, worker_id, title, price, category, description, experience, guarantee, completion_time, telegram, max, rating, created_at, updated_at
+		SELECT id, worker_id, title, price, category, description, experience, guarantee, completion_time, telegram, max, bio, rating, created_at, updated_at
 		FROM services WHERE worker_id = $1 ORDER BY created_at DESC
 	`, claims.UserID)
 	if err != nil {
@@ -861,7 +866,7 @@ func getWorkerServicesHandler(w http.ResponseWriter, r *http.Request) {
 	var services []Service
 	for rows.Next() {
 		var s Service
-		rows.Scan(&s.ID, &s.WorkerID, &s.Title, &s.Price, &s.Category, &s.Description, &s.Experience, &s.Guarantee, &s.CompletionTime, &s.Telegram, &s.Max, &s.Rating, &s.CreatedAt, &s.UpdatedAt)
+		rows.Scan(&s.ID, &s.WorkerID, &s.Title, &s.Price, &s.Category, &s.Description, &s.Experience, &s.Guarantee, &s.CompletionTime, &s.Telegram, &s.Max, &s.Bio, &s.Rating, &s.CreatedAt, &s.UpdatedAt)
 		services = append(services, s)
 	}
 
@@ -979,7 +984,7 @@ func getAllServicesHandler(w http.ResponseWriter, r *http.Request) {
 	
 	rows, err := db.Query(`
 		SELECT s.id, s.worker_id, u.name as worker_name, s.title, s.price, s.category, s.description, 
-		       s.experience, s.guarantee, s.completion_time, s.telegram, s.max, 
+		       s.experience, s.guarantee, s.completion_time, s.telegram, s.max, s.bio, 
 		       COALESCE(s.rating, 0.00), s.created_at, s.updated_at
 		FROM services s
 		JOIN users u ON s.worker_id = u.id
@@ -1357,7 +1362,33 @@ func cancelOrderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Заказ отменён"})
 }
+func getPublicProfileHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	workerID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Неверный ID"})
+		return
+	}
 
+	var name, phone, bio string
+	err = db.QueryRow(
+		"SELECT name, COALESCE(phone, ''), COALESCE(bio, '') FROM users WHERE id = $1",
+		workerID,
+	).Scan(&name, &phone, &bio)
+
+	if err == sql.ErrNoRows {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Пользователь не найден"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"worker":  map[string]interface{}{"name": name, "phone": phone, "bio": bio},
+	})
+}
 func main() {
 	if err := initDB(); err != nil {
 		log.Fatalf("Ошибка подключения к БД: %v", err)
@@ -1385,6 +1416,7 @@ func main() {
 	r.HandleFunc("/api/validate-token", validateTokenHandler).Methods("POST", "OPTIONS")
 	
 	// 🔹 ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ
+	r.HandleFunc("/api/get-public-profile/{id}", getPublicProfileHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc("/api/get-profile", getProfileHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc("/api/update-profile", updateProfileHandler).Methods("PUT", "POST", "OPTIONS")
 	r.HandleFunc("/api/change-password", changePasswordHandler).Methods("POST", "OPTIONS")

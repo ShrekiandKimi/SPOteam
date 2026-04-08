@@ -28,7 +28,9 @@
       </div>
       
       <!-- 🔹 ВКЛАДКА: ПРОФИЛЬ -->
+      
       <div v-if="activeTab === 'profile'" class="tab-content">
+    
         <div v-if="loading" class="loading">Загрузка...</div>
         
         <form v-else @submit.prevent="updateProfile" class="profile-form">
@@ -70,6 +72,14 @@
               placeholder="Город, улица, дом, квартира"
             ></textarea>
           </div>
+          <div class="form-group">
+            <label>📝 О себе / Опыт работы</label>
+            <textarea 
+              v-model="form.bio" 
+              rows="4" 
+              placeholder="Расскажите о вашем опыте, специализации и подходе к работе..."
+            ></textarea>
+          </div>
           
           <div class="form-group">
             <label>Роль</label>
@@ -87,6 +97,14 @@
             </button>
           </div>
         </form>
+      </div>
+      <div v-if="user.role === 'worker'" class="form-group">
+        <label>📝 О себе / Опыт работы</label>
+        <textarea 
+          v-model="form.bio" 
+          rows="4" 
+          placeholder="Расскажите о вашем опыте, специализации и подходе к работе..."
+        ></textarea>
       </div>
       
       <!-- 🔹 ВКЛАДКА: ЗАКАЗЫ -->
@@ -186,7 +204,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/api'
@@ -206,19 +224,23 @@ const savingPassword = ref(false)
 const showLogin = ref(false)
 const showRegister = ref(false)
 
+// 🔹 ЕДИНСТВЕННОЕ объявление user (с полем bio)
 const user = ref({
   id: 0,
   name: '',
   email: '',
   phone: '',
   address: '',
+  bio: '',
   role: ''
 })
 
+// 🔹 ЕДИНСТВЕННОЕ объявление form (с полем bio)
 const form = reactive({
   name: '',
   phone: '',
-  address: ''
+  address: '',
+  bio: ''
 })
 
 const passwordForm = reactive({
@@ -241,16 +263,14 @@ onMounted(async () => {
 async function fetchProfile() {
   loading.value = true
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await api.get('/api/get-profile', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    const response = await api.get('/api/get-profile')
     
     if (response.data && response.data.success) {
       user.value = response.data.user
       form.name = user.value.name
       form.phone = user.value.phone || ''
       form.address = user.value.address || ''
+      form.bio = user.value.bio || '' // 🔹 Загружаем bio
     }
   } catch (error) {
     console.error('Ошибка загрузки профиля:', error)
@@ -266,14 +286,11 @@ async function fetchProfile() {
 async function fetchOrders() {
   loadingOrders.value = true
   try {
-    const token = localStorage.getItem('accessToken')
     const endpoint = user.value.role === 'customer' 
       ? '/api/get-customer-orders' 
       : '/api/get-worker-orders'
     
-    const response = await api.get(endpoint, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    const response = await api.get(endpoint)
     
     if (response.data && response.data.success) {
       orders.value = response.data.orders || []
@@ -288,22 +305,19 @@ async function fetchOrders() {
 async function updateProfile() {
   saving.value = true
   try {
-    const token = localStorage.getItem('accessToken')
     const response = await api.put('/api/update-profile', {
       name: form.name,
       phone: form.phone,
-      address: form.address
-    }, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      address: form.address,
+      bio: form.bio // 🔹 Отправляем bio на сервер
     })
     
     if (response.data && response.data.success) {
-     
+      
       await fetchProfile()
-      // Обновить данные в authStore
       authStore.user.name = form.name
     } else {
-      
+ 
     }
   } catch (error) {
     console.error('Ошибка обновления профиля:', error)
@@ -326,12 +340,9 @@ async function changePassword() {
   
   savingPassword.value = true
   try {
-    const token = localStorage.getItem('accessToken')
     const response = await api.post('/api/change-password', {
       current_password: passwordForm.current,
       new_password: passwordForm.new
-    }, {
-      headers: { 'Authorization': `Bearer ${token}` }
     })
     
     if (response.data && response.data.success) {
@@ -351,71 +362,49 @@ async function changePassword() {
 }
 
 async function deleteAccount() {
-  if (!confirm('⚠️ Вы уверены? Это действие необратимо!')) {
-    return
-  }
-  
-  if (!confirm('⚠️ ВСЕ данные будут удалены. Продолжить?')) {
-    return
-  }
+  if (!confirm('⚠️ Вы уверены? Это действие необратимо!')) return
+  if (!confirm('⚠️ ВСЕ данные будут удалены. Продолжить?')) return
   
   try {
-    const token = localStorage.getItem('accessToken')
-    const response = await api.delete('/api/delete-account', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    const response = await api.delete('/api/delete-account')
     
     if (response.data && response.data.success) {
-     
+      
       authStore.logout()
       router.push('/')
     } else {
-   
+     
     }
   } catch (error) {
     console.error('Ошибка удаления аккаунта:', error)
-    
+   
   }
 }
 
 function getRoleName(role) {
-  const names = {
-    customer: 'Заказчик',
-    worker: 'Исполнитель',
-    admin: 'Администратор'
-  }
+  const names = { customer: 'Заказчик', worker: 'Исполнитель', admin: 'Администратор' }
   return names[role] || role
 }
 
 function getStatusClass(status) {
   const classes = {
-    pending: 'status-pending',
-    accepted: 'status-accepted',
-    rejected: 'status-rejected',
-    completed: 'status-completed',
-    cancelled: 'status-cancelled'
+    pending: 'status-pending', accepted: 'status-accepted', rejected: 'status-rejected',
+    completed: 'status-completed', cancelled: 'status-cancelled'
   }
   return classes[status] || ''
 }
 
 function getStatusText(status) {
   const texts = {
-    pending: 'Ожидает',
-    accepted: 'В работе',
-    rejected: 'Отклонён',
-    completed: 'Выполнен',
-    cancelled: 'Отменён'
+    pending: 'Ожидает', accepted: 'В работе', rejected: 'Отклонён',
+    completed: 'Выполнен', cancelled: 'Отменён'
   }
   return texts[status] || status
 }
 
 function formatDate(date) {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  })
+  return new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 </script>
 

@@ -20,6 +20,9 @@
       <span>Исполнитель: {{ service.worker_name }}</span>
       <span>Категория: {{ getCategoryName(service.category) }}</span>
     </div>
+    <div v-if="service.bio" class="service-bio">
+      <strong>От мастера:</strong> {{ service.bio }}
+    </div>
     
     <div class="service-footer">
       <span class="service-price">{{ service.price }} ₽/час</span>
@@ -238,5 +241,14 @@ function handleOrder() {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+.service-bio {
+  background: #f0f9ff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #0369a1;
+  border-left: 3px solid #38bdf8;
 }
 </style>

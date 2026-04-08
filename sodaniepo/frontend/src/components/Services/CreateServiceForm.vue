@@ -35,8 +35,8 @@
           </div>
           
           <div class="form-group">
-            <label>Описание *</label>
-            <textarea v-model="form.description" required rows="4" placeholder="Опишите вашу услугу..."></textarea>
+            <label>Ссылка на резюме:</label>
+            <textarea v-model="form.description" required rows="4" placeholder="Прикрепите ссылку на резюме:"></textarea>
           </div>
           
           <div class="form-row">
@@ -58,6 +58,14 @@
           <div class="form-group">
             <label>MAX</label>
             <input type="text" v-model="form.max" placeholder="+7 (999) 000-00-00">
+          </div>
+          <div class="form-group">
+            <label>📝 О себе / Опыт работы по этой услуге</label>
+            <textarea 
+              v-model="form.bio" 
+              rows="3" 
+              placeholder="Например: 5 лет опыта в плиточных работах, есть свой инструмент..."
+            ></textarea>
           </div>
 
           <button type="submit" class="btn btn-primary" style="width: 100%" :disabled="loading">
@@ -86,7 +94,8 @@ const form = reactive({
   guarantee: 0,
   completion_time: '',
   telegram: '',
-  max: ''
+  max: '',
+  bio: ''
 })
 
 function closeModal() {
@@ -104,6 +113,7 @@ function resetForm() {
   form.completion_time = ''
   form.telegram = ''
   form.max = ''
+  form.bio = ''
 }
 
 async function handleSubmit() {

@@ -17,10 +17,10 @@
             <input type="email" v-model="form.email" required placeholder="ivan@example.com">
           </div>
           
-          <!-- 🔹 ДОБАВЬТЕ ЭТО ПОЛЕ -->
           <div class="form-group">
-            <label>Телефон</label>
-            <input type="tel" v-model="form.phone" placeholder="+7 (999) 000-00-00">
+            <label>Телефон *</label>
+            <input type="tel" v-model="form.phone" placeholder="Только цифры" @input="phoneError = ''">
+            <span v-if="phoneError" style="color: red; font-size: 12px; display: block; margin-top: 4px;">{{ phoneError }}</span>
           </div>
           
           <div class="form-group">
@@ -30,10 +30,19 @@
           
           <div class="form-group">
             <label>Подтвердите пароль *</label>
-            <input type="password" v-model="form.passwordConfirm" required placeholder="••••••••">
+            <input 
+              type="password" 
+              v-model="form.passwordConfirm" 
+              required 
+              placeholder="••••••••" 
+              @input="passwordError = ''"
+            >
+            <span v-if="passwordError" style="color: red; font-size: 12px; display: block; margin-top: 4px;">
+              {{ passwordError }}
+            </span>
           </div>
           
-          <div class="form-group">
+          <div class="form-group">  
             <label>Я:</label>
             <select v-model="form.role" required>
               <option value="">Выберите роль</option>
@@ -56,17 +65,26 @@
   </div>
 </template>
 
+
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import api from '@/api'
 
 const props = defineProps({
   modelValue: Boolean
 })
+watch(() => props.modelValue, (isOpen) => {
+  document.body.style.overflow = isOpen ? 'hidden' : ''
+})
 
 const emit = defineEmits(['update:modelValue', 'show-login'])
 
 const loading = ref(false)
+
+// 🔹 Состояния для инлайн-ошибок
+const nameError = ref('')
+const phoneError = ref('')
+const passwordError = ref('')
 
 const form = reactive({
   name: '',
@@ -89,6 +107,9 @@ function resetForm() {
   form.password = ''
   form.passwordConfirm = ''
   form.role = ''
+  nameError.value = ''
+  phoneError.value = ''
+  passwordError.value = ''
 }
 
 function showLogin() {
@@ -96,35 +117,40 @@ function showLogin() {
 }
 
 async function handleSubmit() {
-  // 🔹 1. Проверка имени (не пустое)
+  // Сбрасываем ошибки перед новой проверкой
+  nameError.value = ''
+  phoneError.value = ''
+  passwordError.value = ''
+
+  // 🔹 1. Проверка имени
   if (!form.name.trim()) {
-    alert('Пожалуйста, введите ваше имя')
+    nameError.value = 'Введите ваше имя'
     return
   }
 
-  // 🔹 2. Проверка телефона (заполнено и только цифры)
+  // 🔹 2. Проверка телефона
   const phoneValue = form.phone.trim()
   if (!phoneValue) {
-    alert('Пожалуйста, введите номер телефона')
+    phoneError.value = 'Введите номер телефона'
     return
   }
   if (!/^\d+$/.test(phoneValue)) {
-    alert('Номер телефона должен содержать только цифры')
+    phoneError.value = 'Разрешены только цифры'
     return
   }
 
-  // 🔹 Существующие проверки пароля
+  // 🔹 3. Проверка паролей (без alert)
   if (form.password !== form.passwordConfirm) {
-    alert('Пароли не совпадают')
+    passwordError.value = 'Пароли не совпадают'
     return
   }
-  
+
   if (form.password.length < 6) {
-    alert('Пароль должен быть не менее 6 символов')
+    passwordError.value = 'Пароль должен быть не менее 6 символов'
     return
   }
-  
-  // 🔹 Отправка на сервер (код ниже остаётся без изменений)
+
+  // 🔹 Отправка на сервер
   loading.value = true
   try {
     const response = await api.post('/api/register', {
@@ -134,21 +160,21 @@ async function handleSubmit() {
       password: form.password,
       role: form.role
     })
-    
+
     if (response.data && response.data.success) {
-      
       emit('show-login')
       closeModal()
     } else {
-      
+      // Ошибку от сервера можно вывести в console или привязать к конкретному полю
+      console.error('Server error:', response.data)
     }
   } catch (error) {
-    console.error(error)
-    
+    console.error('Registration error:', error)
   } finally {
     loading.value = false
   }
 }
+
 </script>
 
 <style scoped>
